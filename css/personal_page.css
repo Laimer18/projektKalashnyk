@@ -1,0 +1,156 @@
+body {
+    background: #262626;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.bg-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #262626;
+    opacity: 0.95;
+    z-index: -1;
+}
+
+.personal-container, .order-form, .orders-container {
+    max-width: 420px;
+    margin: 80px auto;
+    background: #222;
+    padding: 32px 30px 24px 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h2 {
+    color: #bfa046;
+    font-size: 2.2rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+}
+
+.personal-info {
+    text-align: left;
+    margin: 0 auto 28px auto;
+    max-width: 340px;
+}
+
+.personal-info p {
+    margin: 12px 0;
+    font-size: 18px;
+    color: #ccc;
+}
+
+.personal-info strong {
+    color: #bfa046;
+    font-weight: bold;
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.main-btn, .wish-btn, .history-btn, .order-btn, .home-btn, .mini-btn, input[type="submit"] {
+    display: block;
+    margin-top: 18px;
+    margin-right: 0;
+    padding: 14px 0;
+    width: 100%;
+    max-width: 260px;
+    font-size: 17px;
+    background: #bfa046;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background 0.2s, color 0.2s;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.main-btn.logout {
+    background: #a33;
+    margin-top: 28px;
+}
+
+.main-btn.logout:hover {
+    background: #c44;
+}
+
+.main-btn:hover, .wish-btn:hover, .history-btn:hover, .order-btn:hover, .home-btn:hover, .mini-btn:hover, input[type="submit"]:hover {
+    background: #a88c2c;
+    color: #fff;
+}
+
+#wish-result {
+    margin-top: 18px;
+    font-size: 17px;
+    color: #4682b4;
+    min-height: 24px;
+    font-style: italic;
+}
+
+.order-form input, .order-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.order-form textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.order-message {
+    color: #4682b4;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.orders-container .order-item {
+    border-bottom: 1px solid #333;
+    padding: 14px 0;
+    color: #ccc;
+    text-align: left;
+}
+
+.orders-container .order-item:last-child {
+    border-bottom: none;
+}
+
+.orders-container .order-label {
+    color: #bfa046;
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .personal-container, .order-form, .orders-container {
+        max-width: 98vw;
+        padding: 18px 5vw 18px 5vw;
+    }
+    .personal-info {
+        max-width: 98vw;
+    }
+    .main-btn, .wish-btn, .history-btn, .order-btn, .home-btn, .mini-btn, input[type="submit"] {
+        max-width: 98vw;
+        font-size: 16px;
+    }
+}

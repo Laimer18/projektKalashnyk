@@ -1,0 +1,164 @@
+body {
+    background: #262626;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.bg-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #262626;
+    opacity: 0.95;
+    z-index: -1;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.registration-form {
+    max-width: 420px;
+    margin: 80px auto;
+    background: #222;
+    padding: 32px 30px 24px 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.registration-form h2 {
+    color: #bfa046;
+    font-size: 2.2rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+}
+
+.registration-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.registration-form input[type="text"],
+.registration-form input[type="email"],
+.registration-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1.5px solid #bfa046;
+    border-radius: 8px;
+    background: #bfa046;
+    color: #222;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+
+.registration-form input[type="text"]::placeholder,
+.registration-form input[type="email"]::placeholder,
+.registration-form input[type="password"]::placeholder {
+    color: #222;
+    opacity: 1;
+}
+
+.registration-form input[type="text"]:focus,
+.registration-form input[type="email"]:focus,
+.registration-form input[type="password"]:focus {
+    border: 1.5px solid #a88c2c;
+    box-shadow: 0 0 0 2px #bfa04633;
+    background: #ffe082;
+    color: #222;
+}
+
+.registration-form input[type="submit"] {
+    margin-top: 18px;
+    background: #bfa046;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 14px 0;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+    max-width: 260px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.registration-form input[type="submit"]:hover {
+    background: #a88c2c;
+    color: #fff;
+}
+
+.user-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    width: 100%;
+}
+
+.user-links .mini-btn {
+    display: block;
+    width: 100%;
+    max-width: 260px;
+    padding: 14px 0;
+    font-size: 1.1rem;
+    background: #bfa046;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.user-links .mini-btn:hover {
+    background: #a88c2c;
+    color: #fff;
+}
+
+.message {
+    color: #bfa046;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 500px) {
+    .registration-form {
+        max-width: 98vw;
+        padding: 12px 2vw 12px 2vw;
+    }
+    .user-links .mini-btn,
+    .registration-form input[type="submit"] {
+        font-size: 1rem;
+        padding: 10px 0;
+        max-width: 98vw;
+    }
+}

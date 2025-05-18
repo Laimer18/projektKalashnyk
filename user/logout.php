@@ -1,6 +1,6 @@
 <?php
-session_start();
-session_unset();
-session_destroy();
+require_once '../classes/SessionManager.php';
+
+SessionManager::logout();
 header("Location: register1.php");
 exit;

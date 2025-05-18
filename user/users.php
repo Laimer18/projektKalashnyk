@@ -1,9 +1,12 @@
 <?php
-require_once '../contact/db.php';
-require_once 'user.php';
-require_once 'user_rep.php';
+require_once '../contact/db.php';       // Підключаємо клас Database
+require_once 'user.php';               // Клас User
+require_once 'user_rep.php';           // Клас UserRepository
 
-$userRepo = new UserRepository($pdo);
+// Отримуємо PDO-з'єднання через Database::getInstance()
+$userRepo = new UserRepository(Database::getInstance());
+
+// Отримуємо всіх користувачів
 $users = $userRepo->getAll();
 ?>
 <a href="register1.php">Go back to registration</a>
@@ -12,16 +15,16 @@ $users = $userRepo->getAll();
         <th>ID</th><th>Name</th><th>Lastname</th><th>Email</th><th>Phone</th><th>Actions</th>
     </tr>
     <?php foreach ($users as $user): ?>
-    <tr>
-        <td><?= htmlspecialchars($user->id) ?></td>
-        <td><?= htmlspecialchars($user->first_name) ?></td>
-        <td><?= htmlspecialchars($user->last_name) ?></td>
-        <td><?= htmlspecialchars($user->email) ?></td>
-        <td><?= htmlspecialchars($user->phone) ?></td>
-        <td>
-            <a href="edit_user.php?id=<?= $user->id ?>">Edit</a>
-            <a href="delete_user.php?id=<?= $user->id ?>" onclick="return confirm('Delete?')">Delete</a>
-        </td>
-    </tr>
+        <tr>
+            <td><?= htmlspecialchars($user->getId()) ?></td>
+            <td><?= htmlspecialchars($user->getFirstName()) ?></td>
+            <td><?= htmlspecialchars($user->getLastName()) ?></td>
+            <td><?= htmlspecialchars($user->getEmail()) ?></td>
+            <td><?= htmlspecialchars($user->getPhone()) ?></td>
+            <td>
+                <a href="edit_user.php?id=<?= $user->getId() ?>">Edit</a>
+                <a href="delete_user.php?id=<?= $user->getId() ?>" onclick="return confirm('Delete?')">Delete</a>
+            </td>
+        </tr>
     <?php endforeach; ?>
 </table>

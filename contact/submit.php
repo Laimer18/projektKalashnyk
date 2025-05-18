@@ -1,30 +1,29 @@
-
 <?php
-require_once 'db.php';
-require_once '../user/user.php';
-require_once '../user/user_rep.php';
+require_once __DIR__ . '/../contact/db.php';
+require_once __DIR__ . '/../classes/ContactMessage.php';
+require_once __DIR__ . '/../classes/ContactMessageRepository.php';
+
+$pdo = Database::getInstance(); // <- додано отримання PDO
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $first_name = trim($_POST["first_name"]);
-    $last_name  = trim($_POST["last_name"]);
-    $email      = trim($_POST["email"]);
-    $phone      = trim($_POST["phone"]);
-    $password   = trim($_POST["password"]);
-    $confirm    = trim($_POST["confirm"]);
-    $userRepo = new UserRepository($pdo);
+    $name    = trim($_POST["name"] ?? '');
+    $email   = trim($_POST["email"] ?? '');
+    $subject = trim($_POST["subject"] ?? '');
+    $message = trim($_POST["message"] ?? '');
 
-    foreach ($userRepo->getAll() as $user) {
-        if ($user->email === $email) {
-            die("A user with this email already exists.");
-        }
+    if (!$name || !$email || !$subject || !$message) {
+        die("All fields are required.");
     }
 
-    $user = new User($first_name, $last_name, $email, $phone);
-    $userRepo->add($user);
+    $repo = new ContactMessageRepository($pdo);
+    $contactMessage = new ContactMessage($name, $email, $subject, $message);
 
-    echo "Thank you! You have successfully signed up for a photo shoot.";
+    if ($repo->add($contactMessage)) {
+        echo "Thank you! Your message has been sent.";
+    } else {
+        echo "Error: Could not send your message.";
+    }
 } else {
     echo "Error: Form not submitted.";
 }
 exit;
-?>

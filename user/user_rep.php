@@ -1,7 +1,7 @@
 <?php
 
-require_once '../contact/db.php';
-require_once 'user.php';
+require_once '../contact/db.php'; // Шлях до файлу з PDO-підключенням
+require_once 'user.php'; // Клас User з геттерами
 
 class UserRepository
 {
@@ -12,79 +12,108 @@ class UserRepository
         $this->pdo = $pdo;
     }
 
-    // CREATE
+    // Додати користувача
     public function add(User $user): bool
     {
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO users (first_name, last_name, email, phone, password) VALUES (?, ?, ?, ?, ?)"
-        );
+        $stmt = $this->pdo->prepare("
+            INSERT INTO users (first_name, last_name, email, phone, password)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+
         return $stmt->execute([
-            $user->first_name,
-            $user->last_name,
-            $user->email,
-            $user->phone,
-            $user->password
+            $user->getFirstName(),
+            $user->getLastName(),
+            $user->getEmail(),
+            $user->getPhone(),
+            $user->getPassword()
         ]);
     }
 
-    // READ (all)
+    // Отримати всіх користувачів
     public function getAll(): array
     {
         $stmt = $this->pdo->query("SELECT * FROM users");
         $users = [];
+
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $users[] = new User(
                 $row['first_name'],
                 $row['last_name'],
                 $row['email'],
                 $row['phone'],
-                $row['id'],
-                $row['password'] ?? ''
+                (int)$row['id'],
+                $row['password'] ?? null
             );
         }
+
         return $users;
     }
 
-    // READ (by id)
+    // Отримати користувача по ID
     public function getById(int $id): ?User
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if ($row) {
             return new User(
                 $row['first_name'],
                 $row['last_name'],
                 $row['email'],
                 $row['phone'],
-                $row['id'],
-                $row['password'] ?? ''
+                (int)$row['id'],
+                $row['password'] ?? null
             );
         }
+
         return null;
     }
 
-    // UPDATE
+    // Отримати користувача по email (для логіну)
+    public function getByEmail(string $email): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            return new User(
+                $row['first_name'],
+                $row['last_name'],
+                $row['email'],
+                $row['phone'],
+                (int)$row['id'],
+                $row['password'] ?? null
+            );
+        }
+
+        return null;
+    }
+
+    // Оновити користувача
     public function update(User $user): bool
     {
-        $stmt = $this->pdo->prepare(
-            "UPDATE users SET first_name=?, last_name=?, email=?, phone=?, password=? WHERE id=?"
-        );
+        $stmt = $this->pdo->prepare("
+            UPDATE users 
+            SET first_name = ?, last_name = ?, email = ?, phone = ?, password = ? 
+            WHERE id = ?
+        ");
+
         return $stmt->execute([
-            $user->first_name,
-            $user->last_name,
-            $user->email,
-            $user->phone,
-            $user->password,
-            $user->id
+            $user->getFirstName(),
+            $user->getLastName(),
+            $user->getEmail(),
+            $user->getPhone(),
+            $user->getPassword(),
+            $user->getId()
         ]);
     }
 
-    // DELETE
+    // Видалити користувача
     public function delete(int $id): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id=?");
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
         return $stmt->execute([$id]);
     }
 }
-?>

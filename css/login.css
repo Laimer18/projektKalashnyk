@@ -1,93 +1,40 @@
 body {
-    background: #262626;
     font-family: Arial, sans-serif;
-    min-height: 100vh;
-    margin: 0;
+    background-color: #f0f2f5;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
 }
 
 .login-container {
-    max-width: 480px;
-    width: 90%;
-    background: #1a1a1a;
-    padding: 40px 30px 32px 30px;
-    border-radius: 20px;
-    box-shadow: 0 2px 24px rgba(0,0,0,0.25);
-    text-align: center;
-    color: #ccc;
-    box-sizing: border-box;
-}
-
-h1 {
-    color: #bfa046;
-    font-size: 2.4rem;
-    font-weight: bold;
-    letter-spacing: 4px;
-    margin-bottom: 32px;
-    text-transform: uppercase;
-}
-
-form label {
-    display: block;
-    text-align: left;
-    font-weight: bold;
-    margin-bottom: 6px;
-    color: #bfa046;
-}
-
-form input[type="email"],
-form input[type="password"] {
-    width: 100%;
-    padding: 14px;
-    margin-bottom: 18px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 17px;
-    box-sizing: border-box;
-    background: #333;
-    color: #eee;
-}
-
-form input::placeholder {
-    color: #999;
-}
-
-.error-message {
-    color: #e74c3c;
-    margin-bottom: 18px;
-    font-weight: bold;
-}
-
-.main-btn {
-    display: block;
-    margin: 18px auto 0 auto;
-    padding: 16px 0;
-    width: 100%;
-    max-width: 340px;
-    font-size: 20px;
-    background: #bfa046;
-    color: #fff;
+    background: white;
+    padding: 30px;
     border-radius: 10px;
-    font-weight: bold;
-    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.login-form input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.login-form button {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
     border: none;
     cursor: pointer;
-    transition: background 0.2s ease;
-    box-sizing: border-box;
-    text-align: center;
-    text-decoration: none;
+    width: 100%;
 }
 
-.main-btn:hover {
-    background: #a88c2c;
-    color: #fff;
+.login-form button:hover {
+    background: #0056b3;
 }
 
-.btn-group {
-    margin-top: 20px;
-    max-width: 340px;
-    margin-left: auto;
-    margin-right: auto;
+.error {
+    color: red;
+    margin-top: 10px;
 }

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
 <?php
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ?>
+<!DOCTYPE html>
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
     <meta charset="utf-8">
@@ -64,7 +64,7 @@ error_reporting(E_ALL);
                         <div class="col-md-12 col-sm-12">
                             <div class="toggle-content text-center" id="tab1">
                                 <h3>Our History</h3>
-                                <p>Circle is free responsive website template for you. Please tell your friends about <span class="blue">template</span><span class="green">mo</span> website. Feel free to download, modify and use this template for your websites. You can easily change icons by <a rel="nofollow" href="http://fontawesome.info/font-awesome-icon-world-map/">Font Awesome</a>. Example: <strong>&lt;i class=&quot;fa fa-camera&quot;&gt;&lt;/i&gt;</strong>
+                                <p>Circle is free responsive website template for you. Please tell your friends about <span class="blue">template</span><span class="green">mo</span> website. Feel free to download, modify and use this template for your websites. You can easily change icons by <a rel="nofollow" href="http://fontawesome.info/font-awesome-icon-world-map/">Font Awesome</a>. Example: <strong><i class="fa fa-camera"></i></strong>
                                     <br><br>
                                     Credit goes to <a rel="nofollow" href="http://unsplash.com">Unsplash</a> for photos used in this template. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, repellat, aspernatur nihil quasi commodi laboriosam cumque est minus minima sit dicta adipisci possimus magnam. Sit, repudiandae, ut, error, voluptates aspernatur inventore quo earum reiciendis dolorum amet perspiciatis adipisci itaque voluptatum iste laboriosam sapiente hic autem blanditiis doloribus nihil.</p>
                             </div>
@@ -246,8 +246,6 @@ error_reporting(E_ALL);
                             </div>
                         </div> <!-- /.col-md-12 -->
 
-
-
                         <div class="col-md-12">
                             <div class="contact-form">
                                 <form action="contact/submit.php" method="post" style="flex-direction: column; align-items: center; display: flex;">
@@ -257,6 +255,7 @@ error_reporting(E_ALL);
                                         <input type="email" name="email" id="email" placeholder="Email" style="flex:1; min-width:180px; max-width:260px;" required>
                                         <input type="text" name="phone" id="phone" placeholder="Phone" style="flex:1; min-width:120px; max-width:180px;" required>
                                     </div>
+                                    <textarea name="questions" id="questions" placeholder="Your questions or comments" style="width: 100%; max-width: 600px; min-height: 100px; margin-top: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc;" required></textarea>
                                     <input type="submit" name="send" value="Send Message" id="submit" class="button" style="min-width:180px; border-radius: 10px; margin:20px auto 0 auto; display:block;">
                                 </form>
                             </div> <!-- /.contact-form -->
@@ -280,33 +279,20 @@ error_reporting(E_ALL);
 <script src="js/plugins.js"></script>
 <script src="js/main.js"></script>
 <script type="text/javascript">
-
     jQuery(function ($) {
-
         $.supersized({
-
-            // Functionality
-            slide_interval: 3000, // Length between transitions
-            transition: 1, // 0-None, 1-Fade, 2-Slide Top, 3-Slide Right, 4-Slide Bottom, 5-Slide Left, 6-Carousel Right, 7-Carousel Left
-            transition_speed: 700, // Speed of transition
-
-            // Components
-            slide_links: 'blank', // Individual links for each slide (Options: false, 'num', 'name', 'blank')
-            slides: [ // Slideshow Images
-                {
-                    image: 'images/templatemo-slide-1.jpg'
-                }, {
-                    image: 'images/templatemo-slide-2.jpg'
-                }, {
-                    image: 'images/templatemo-slide-3.jpg'
-                }, {
-                    image: 'images/templatemo-slide-4.jpg'
-                }
+            slide_interval: 3000,
+            transition: 1,
+            transition_speed: 700,
+            slide_links: 'blank',
+            slides: [
+                {image: 'images/templatemo-slide-1.jpg'},
+                {image: 'images/templatemo-slide-2.jpg'},
+                {image: 'images/templatemo-slide-3.jpg'},
+                {image: 'images/templatemo-slide-4.jpg'}
             ]
-
         });
     });
-
 </script>
 
 <!-- Google Map -->

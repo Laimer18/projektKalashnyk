@@ -10,19 +10,22 @@ require_once '../contact/db.php';
 require_once '../classes/Photosession.php';
 require_once '../classes/PhotosessionRepository.php';
 
-// Ініціалізуємо PDO через свій клас Database (підкоригуй під свій код)
 $pdo = Database::getInstance();
 
 $email = $_SESSION['user']['email'];
 
-$repo = new PhotosessionRepository($pdo);
-$orders = $repo->getByEmail($email);
+// Ініціалізуємо репозиторій
+$photosessionRepo = new PhotosessionRepository($pdo);
+
+// Отримуємо замовлення за email
+$orders = $photosessionRepo->getByEmail($email);
+
 ?>
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order history</title>
+    <title>Order History</title>
     <link rel="stylesheet" href="../css/register.css">
     <link rel="stylesheet" href="../css/templatemo_style.css">
     <link rel="stylesheet" href="../css/orders_history.css">
@@ -30,21 +33,23 @@ $orders = $repo->getByEmail($email);
 <body>
 <div class="bg-overlay"></div>
 <div class="orders-container">
-    <h2>Order history</h2>
+    <h2>Order History</h2>
     <?php if (empty($orders)): ?>
         <p style="text-align:center;">You have no orders yet.</p>
     <?php else: ?>
         <?php foreach ($orders as $order): ?>
             <div class="order-item">
-                <div><span class="order-label">Photoshoot date:</span> <?= htmlspecialchars($order->getDate()) ?></div>
-                <div><span class="order-label">Phone:</span> <?= htmlspecialchars($order->getPhone()) ?></div>
-                <div><span class="order-label">Details:</span> <?= nl2br(htmlspecialchars($order->getDetails())) ?></div>
-                <div><span class="order-label">Photographer:</span> Sofia</div>
+                <div><strong>Photoshoot date:</strong> <?= htmlspecialchars($order->getDate()) ?></div>
+                <div><strong>Phone:</strong> <?= htmlspecialchars($order->getPhone()) ?></div>
+                <div><strong>Details:</strong> <?= nl2br(htmlspecialchars($order->getDetails())) ?></div>
+                <div><strong>Photographer:</strong> Sofia</div>
                 <div>
-                    <span class="order-label">Reserved:</span>
+                    <strong>Reserved:</strong>
                     <?php
                     if (method_exists($order, 'getCreatedAt') && $order->getCreatedAt()) {
                         echo htmlspecialchars(date('Y-m-d', strtotime($order->getCreatedAt())));
+                    } else {
+                        echo 'N/A';
                     }
                     ?>
                 </div>

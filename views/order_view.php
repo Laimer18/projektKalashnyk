@@ -11,7 +11,7 @@
 <div class="bg-overlay"></div>
 <div class="order-form">
     <h2>Book a Photoshoot</h2>
-    <?php if ($message): ?>
+    <?php if (!empty($message)): ?>
         <div class="order-message"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
     <form method="post" action="">
@@ -21,7 +21,7 @@
         <textarea name="details" placeholder="Order details (location, wishes, etc.)"></textarea>
         <input type="submit" value="Book">
     </form>
-    <div style="text-align:center;margin-top:18px;">
+    <div style="text-align:center; margin-top: 18px;">
         <a href="personal_page.php" class="main-btn">Back to Account</a>
     </div>
 </div>

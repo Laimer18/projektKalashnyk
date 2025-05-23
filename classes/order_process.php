@@ -6,8 +6,13 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: order.php");
+    exit;
+}
+
 require_once '../contact/db.php';
-require_once '../classes/Photosession.php';
+require_once '../classes/PhotoSession.php';
 require_once '../classes/PhotosessionRepository.php';
 
 $pdo = Database::getInstance();
@@ -20,8 +25,11 @@ $date = $_POST['date'] ?? '';
 $details = trim($_POST['details'] ?? '');
 
 if (!$name || !$phone || !$date) {
+    die('Будь ласка, заповніть усі обов’язкові поля.');
+}
 
-    die('Please fill all required fields.');
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    die('Некоректний email користувача.');
 }
 
 $photosession = new PhotoSession($name, $email, $phone, $date, $details);
@@ -32,5 +40,5 @@ if ($repo->add($photosession)) {
     header("Location: orders_history.php");
     exit;
 } else {
-    die('Failed to save order. Please try again.');
+    die('Не вдалося зберегти замовлення. Спробуйте ще раз.');
 }

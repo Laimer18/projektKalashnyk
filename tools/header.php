@@ -1,4 +1,13 @@
-<a href="/projekt1/user/register1.php" class="account-btn">ACCOUNT</a>
+<?php
+session_start();
+
+// Визначаємо URL для кнопки ACCOUNT залежно від того, чи є сесія
+if (isset($_SESSION['user_id'])) {
+    $account_url = '/projekt1/user/personal_page.php';
+} else {
+    $account_url = '/projekt1/user/register1.php';
+}
+?>
 
 <div class="col-md-4 col-sm-12">
     <div class="sidebar-menu">
@@ -16,11 +25,12 @@
                 <li><a class="show-3" href="#">Gallery</a></li>
                 <li><a class="show-4" href="#" onclick="templatemo_map();">Contact</a></li>
                 <li><a rel="nofollow" href="https://www.facebook.com/profile.php?id=61572448198509" target="_parent">External Link</a></li>
-
-
             </ul> <!-- /.menu -->
             <a href="#" class="toggle-menu"><i class="fa fa-bars"></i></a>
         </div> <!-- /.menu-wrapper -->
+
+        <!-- ACCOUNT BUTTON -->
+        <a href="<?php echo $account_url; ?>" class="account-btn">ACCOUNT</a>
 
         <!--Arrow Navigation-->
         <a id="prevslide" class="load-item"><i class="fa fa-angle-left"></i></a>
@@ -28,4 +38,3 @@
 
     </div>
 </div>
-            

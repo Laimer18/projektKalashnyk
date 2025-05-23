@@ -3,6 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 ?>
+
 <!DOCTYPE html>
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
@@ -155,84 +156,6 @@ error_reporting(E_ALL);
                     </div> <!-- /.row -->
                 </div> <!-- /.services -->
 
-                <div id="menu-3" class="gallery content">
-                    <div class="row">
-
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g1.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g1.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g2.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g2.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g3.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g3.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g4.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g4.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g5.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g5.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g6.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g6.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g7.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g7.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g8.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g8.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-ms-6">
-                            <div class="g-item">
-                                <img src="images/gallery/g9.jpg" alt="">
-                                <a data-rel="lightbox" class="overlay" href="images/gallery/g9.jpg">
-                                    <span>+</span>
-                                </a>
-                            </div> <!-- /.g-item -->
-                        </div> <!-- /.col-md-4 -->
-
-                    </div> <!-- /.row -->
-                </div> <!-- /.gallery -->
 
                 <div id="menu-4" class="contact content">
                     <div class="row">

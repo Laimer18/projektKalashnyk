@@ -1,24 +1,22 @@
 <?php
 session_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once '../contact/db.php';
 require_once '../classes/Photosession.php';
 require_once '../classes/PhotosessionRepository.php';
 
 class OrderController
 {
-    private $pdo;
-    private $message = '';
+    private PDO $pdo;
+    private PhotosessionRepository $repo;
+    private string $message = '';
 
-    public function __construct($pdo)
+    public function __construct()
     {
-        $this->pdo = $pdo;
+        $this->pdo = Database::getInstance();
+        $this->repo = new PhotosessionRepository($this->pdo);
     }
 
-    public function handleRequest()
+    public function handleRequest(): void
     {
         if (!isset($_SESSION['user'])) {
             header("Location: register1.php");
@@ -26,20 +24,18 @@ class OrderController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->processForm();
+            $this->processForm($_POST, $_SESSION['user']['email'] ?? '');
         }
 
         $this->renderView();
     }
 
-    private function processForm()
+    private function processForm(array $postData, string $email): void
     {
-        $name = trim($_POST['name'] ?? '');
-        $phone = trim($_POST['phone'] ?? '');
-        $date = trim($_POST['date'] ?? '');
-        $details = trim($_POST['details'] ?? '');
-
-        $email = $_SESSION['user']['email'] ?? '';
+        $name = trim($postData['name'] ?? '');
+        $phone = trim($postData['phone'] ?? '');
+        $date = trim($postData['date'] ?? '');
+        $details = trim($postData['details'] ?? '');
 
         if (!$email) {
             $this->message = "User email not found in session.";
@@ -56,25 +52,21 @@ class OrderController
             return;
         }
 
-        $repo = new PhotosessionRepository($this->pdo);
         $session = new Photosession($name, $email, $phone, $date, $details);
 
-        if ($repo->add($session)) {
+        if ($this->repo->add($session)) {
             $this->message = "Your order has been received! We will contact you soon.";
         } else {
             $this->message = "There was an error submitting your order. Please try again.";
         }
     }
 
-    private function renderView()
+    private function renderView(): void
     {
         $message = $this->message;
-        // Важливо: шлях до файлу з урахуванням нової структури
         include __DIR__ . '/../views/order_view.php';
     }
 }
 
-// Ініціалізація та запуск контролера
-$pdo = Database::getInstance();
-$controller = new OrderController($pdo);
+$controller = new OrderController();
 $controller->handleRequest();

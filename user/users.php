@@ -23,7 +23,7 @@ $users = $userRepo->getAll();
 <head>
     <meta charset="UTF-8">
     <title>Users List</title>
-    <link rel="stylesheet" href="../css/login.css"> <!-- Adjust path to your CSS -->
+    <link rel="stylesheet" href="../login.css"> <!-- Adjust path to your CSS -->
 </head>
 <body>
 

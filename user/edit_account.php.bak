@@ -1,0 +1,18 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/../classes/EditAccountController.php';
+require_once __DIR__ . '/../views/EditAccountView.php';
+require_once __DIR__ . '/../user/user.php'; // Ensure User class is available
+
+// The controller handles session start, authentication, and CSRF token generation.
+$controller = new EditAccountController();
+$controller->handleRequest(); // Process form submission if any
+
+$user = $controller->getUser();
+$errorMessage = $controller->getErrorMessage();
+$successMessage = $controller->getSuccessMessage();
+$csrfToken = $controller->getCsrfToken();
+
+$view = new EditAccountView($user, $errorMessage, $successMessage, $csrfToken);
+$view->render();

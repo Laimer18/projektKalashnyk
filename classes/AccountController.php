@@ -75,7 +75,5 @@ class AccountController
         include __DIR__ . '/../views/account_view.php';
     }
 }
-
-// Запуск контролера
 $controller = new AccountController();
 $controller->handleRequest();

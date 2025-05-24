@@ -1,0 +1,25 @@
+<?php
+require_once __DIR__ . '/../classes/PersonalPageController.php';
+require_once __DIR__ . '/../views/PersonalPageView.php';
+
+$controller = new PersonalPageController(); // Controller handles session start and user loading
+
+$user = $controller->getUser();
+$error = $controller->getError();
+$csrfToken = $controller->getCsrfToken();
+
+if ($error) {
+    // It's generally better to display errors within the page structure
+    // or log them, rather than just die(). For now, keeping similar behavior.
+    die(htmlspecialchars($error));
+}
+
+if (!$user) {
+    // This case should ideally be handled by the controller redirecting,
+    // but as a fallback:
+    header('Location: register1.php'); // Adjust path as necessary
+    exit;
+}
+
+$view = new PersonalPageView($user, $csrfToken);
+$view->render();

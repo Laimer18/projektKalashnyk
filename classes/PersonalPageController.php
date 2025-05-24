@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
-require_once '../contact/db.php';
+// require_once '../contact/db.php'; // Заменено на использование автозагрузчика или прямого подключения в index.php
+// Предполагается, что Database класс будет доступен через автозагрузчик или уже подключен в index.php
+// Если нет, то в index.php перед созданием контроллера нужно будет добавить:
+// if (!class_exists('Database')) { require_once BASE_PATH . '/contact/db.php'; }
 
 class PersonalPageController
 {
@@ -11,10 +14,19 @@ class PersonalPageController
 
     public function __construct()
     {
-        session_start();
+        // session_start(); // Сессия уже должна быть запущена в index.php
+        // Проверяем, запущена ли сессия, перед обращением к $_SESSION
+        if (session_status() == PHP_SESSION_NONE) {
+            // Этого не должно происходить, если index.php работает корректно,
+            // но на всякий случай, чтобы избежать ошибок при прямом доступе или тестах.
+            session_start();
+        }
 
         if (!isset($_SESSION['user_id'])) {
-            header('Location: register1.php');
+            // Предполагаем, что $base_project_url_path будет доступен или передан,
+            // но для простоты пока захардкодим. В идеале, его нужно передавать в конструктор или получать из конфигурации.
+            $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login'; // или /user/register если это страница регистрации
+            header('Location: ' . $loginPageUrl);
             exit;
         }
 
@@ -44,7 +56,9 @@ class PersonalPageController
 
             if (!$user) {
                 session_destroy();
-                header('Location: register1.php');
+                // Аналогично предыдущему редиректу
+                $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login';
+                header('Location: ' . $loginPageUrl);
                 exit;
             }
 
@@ -65,7 +79,9 @@ class PersonalPageController
             $stmt->execute([$_SESSION['user_id']]);
 
             session_destroy();
-            header('Location: ../index.php');
+            // Редирект на главную страницу
+            $homePageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/';
+            header('Location: ' . $homePageUrl);
             exit;
         } catch (PDOException $e) {
             $this->error = "Failed to delete account: " . $e->getMessage();

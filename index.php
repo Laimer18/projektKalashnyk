@@ -2,241 +2,365 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-?>
 
-<!DOCTYPE html>
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-<head>
-    <meta charset="utf-8">
-    <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
-    <title>Circle by templatemo</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
-    <!--
-    Circle Template
-    http://www.templatemo.com/tm-410-circle
-    -->
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
+// 1. Определение базового пути проекта
+define('BASE_PATH', __DIR__);
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/normalize.min.css">
-    <link rel="stylesheet" href="css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/animate.css">
-    <link rel="stylesheet" href="css/templatemo_misc.css">
-    <link rel="stylesheet" href="css/templatemo_style.css">
+// 2. Автозагрузчик классов
+spl_autoload_register(function ($class_name) {
+    $file = BASE_PATH . '/classes/' . str_replace('\\', '/', $class_name) . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+        return;
+    }
+    // Попытка загрузить из других известных мест, если необходимо (например, модели, репозитории)
+    // Пример для UserRepository, если он остался в user/
+    if ($class_name === 'UserRepository') {
+        $userRepoFile = BASE_PATH . '/user/UserRepository.php'; // Убедитесь, что файл так называется
+        if (file_exists($userRepoFile)) {
+            require_once $userRepoFile;
+            return;
+        }
+    }
+    // Пример для User, если он остался в user/
+    if ($class_name === 'User') {
+        $userFile = BASE_PATH . '/user/User.php';
+        if (file_exists($userFile)) {
+            require_once $userFile;
+            return;
+        }
+    }
+});
 
-    <script src="js/vendor/modernizr-2.6.2.min.js"></script>
-    <!-- templatemo 410 circle -->
-</head>
-<body>
-<!--[if lt IE 7]>
-<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-<![endif]-->
+// 3. Управление сессиями
+if (class_exists('SessionManager')) {
+    SessionManager::getInstance();
+} else {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    error_log("Warning: SessionManager class not found. Using basic session_start().");
+}
 
+// 4. Простой маршрутизатор
+$request_uri_original = $_SERVER['REQUEST_URI'];
 
-<div class="bg-overlay"></div>
-<div class="container-fluid">
-    <div class="row">
+// Базовый путь проекта в URL. ИЗМЕНИТЕ ПРИ НЕОБХОДИМОСТИ.
+// Если проект в http://localhost/projekt1/, то '/projekt1'. Если в http://localhost/, то ''.
+$base_project_url_path = '/projekt1';
 
-        <?php require_once 'tools/header.php'?>
-        <div class="col-md-8 col-sm-12">
+$request_uri_processed = $request_uri_original;
+if (!empty($base_project_url_path) && strpos($request_uri_original, $base_project_url_path) === 0) {
+    $request_uri_processed = substr($request_uri_original, strlen($base_project_url_path));
+}
 
-            <div id="menu-container">
+// Удаляем GET-параметры
+$request_path = parse_url($request_uri_processed, PHP_URL_PATH);
 
-                <div id="menu-1" class="about content">
-                    <div class="row">
-                        <ul class="tabs">
-                            <li class="col-md-4 col-sm-4">
-                                <a href="#tab1" class="icon-item">
-                                    <i class="fa fa-umbrella"></i>
-                                </a> <!-- /.icon-item -->
-                            </li>
-                            <li class="col-md-4 col-sm-4">
-                                <a href="#tab2" class="icon-item">
-                                    <i class="fa fa-camera"></i>
-                                </a> <!-- /.icon-item -->
-                            </li>
-                            <li class="col-md-4 col-sm-4">
-                                <a href="#tab3" class="icon-item">
-                                    <i class="fa fa-coffee"></i>
-                                </a> <!-- /.icon-item -->
-                            </li>
-                        </ul> <!-- /.tabs -->
-                        <div class="col-md-12 col-sm-12">
-                            <div class="toggle-content text-center" id="tab1">
-                                <h3>Our History</h3>
-                                <p>Circle is free responsive website template for you. Please tell your friends about <span class="blue">template</span><span class="green">mo</span> website. Feel free to download, modify and use this template for your websites. You can easily change icons by <a rel="nofollow" href="http://fontawesome.info/font-awesome-icon-world-map/">Font Awesome</a>. Example: <strong><i class="fa fa-camera"></i></strong>
-                                    <br><br>
-                                    Credit goes to <a rel="nofollow" href="http://unsplash.com">Unsplash</a> for photos used in this template. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, repellat, aspernatur nihil quasi commodi laboriosam cumque est minus minima sit dicta adipisci possimus magnam. Sit, repudiandae, ut, error, voluptates aspernatur inventore quo earum reiciendis dolorum amet perspiciatis adipisci itaque voluptatum iste laboriosam sapiente hic autem blanditiis doloribus nihil.</p>
-                            </div>
+// Нормализация пути: убираем начальный и конечный слеши для консистентности,
+// затем добавляем один начальный слеш, если путь не пустой.
+$request_path = trim($request_path, '/');
 
-                            <div class="toggle-content text-center" id="tab2">
-                                <h3>What We Do</h3>
-                                <p>Donec quis orci nisl. Integer euismod lacus nec risus sollicitudin molestie vel semper turpis. In varius imperdiet enim quis iaculis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris ac mauris aliquam magna molestie posuere in id elit. Integer semper metus felis, fringilla congue elit commodo a. Donec eget rutrum libero.
-                                    <br><br>Nunc dui elit, vulputate vitae nunc sed, accumsan condimentum nisl. Vestibulum a dui lectus. Vivamus in justo hendrerit est cursus semper sed id nibh. Donec ut dictum lorem, eu molestie nisi. Quisque vulputate quis leo lobortis fermentum. Ut sit amet consectetur dui, vitae porttitor lectus.</p>
-                            </div>
+// Удаляем .php в конце, если он есть, чтобы обрабатывать такие случаи
+if (substr($request_path, -4) === '.php') {
+    $request_path = substr($request_path, 0, -4);
+}
 
-                            <div class="toggle-content text-center" id="tab3">
-                                <h3>Our Team</h3>
-                                <p>Aliquam erat volutpat. Vivamus tempus, nisi varius imperdiet molestie, velit mi feugiat felis, sit amet fringilla mi massa sit amet arcu. Mauris dictum nisl id felis lacinia congue. Aliquam lectus nisi, sodales in lacinia quis, lobortis vel sem. Vestibulum elit nisi, placerat eget auctor ut, dictum at libero.
-                                    <br><br>Proin enim odio, eleifend eget euismod vitae, pharetra sed lacus. Donec at sapien nunc. Mauris vehicula quis diam nec dignissim. Nulla consequat nibh mattis metus sodales, at eleifend tortor tempor. Sed auctor lacus felis. </p>
-                            </div>
-                        </div> <!-- /.col-md-12 -->
-                    </div> <!-- /.row -->
+if (empty($request_path)) {
+    $request_path = '/'; // Для корневого URL
+} else {
+    $request_path = '/' . $request_path; // Всегда начинаем с / для непустых путей
+}
 
-                    <div class="row">
-                        <div class="col-md-4 col-sm-4">
-                            <div class="member-item">
-                                <div class="thumb">
-                                    <img src="images/team/member-1.jpg" alt="Tanya - Web Designer">
-                                </div>
-                                <h4>Tanya</h4>
-                                <span>Web Designer</span>
-                            </div> <!-- /.member-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-sm-4">
-                            <div class="member-item">
-                                <div class="thumb">
-                                    <img src="images/team/member-2.jpg" alt="Candy - Web Developer">
-                                </div>
-                                <h4>Candy</h4>
-                                <span>Web Developer</span>
-                            </div> <!-- /.member-item -->
-                        </div> <!-- /.col-md-4 -->
-                        <div class="col-md-4 col-sm-4">
-                            <div class="member-item">
-                                <div class="thumb">
-                                    <img src="images/team/member-3.jpg" alt="Julia - Creative Director">
-                                </div>
-                                <h4>Julia</h4>
-                                <span>Creative Director</span>
-                            </div> <!-- /.member-item -->
-                        </div> <!-- /.col-md-4 -->
-                    </div> <!-- /.row -->
-                </div> <!-- /.about -->
+// ОТЛАДКА (раскомментируйте при необходимости):
+// /* -- Раскомментировано для отладки (die закомментирован)
+echo "<pre>";
+echo "DEBUGGING ROUTER (index.php):\n";
+echo "Original REQUEST_URI: " . htmlspecialchars($request_uri_original) . "\n";
+echo "Base Project URL Path: " . htmlspecialchars($base_project_url_path) . "\n";
+echo "Processed URI (after stripping base): " . htmlspecialchars($request_uri_processed) . "\n";
+echo "Final Request Path for Switch: " . htmlspecialchars($request_path) . "\n";
+echo "</pre>";
+// die("Debug finished. Current Request Path for Switch: " . htmlspecialchars($request_path)); // Оставляем закомментированным
+// */ -- Раскомментировано для отладки (die закомментирован)
 
-                <div id="menu-2" class="services content">
-                    <div class="row">
-                        <ul class="tabs">
-                            <li class="col-md-4 col-sm-4">
-                                <a href="#tab4" class="icon-item">
-                                    <i class="fa fa-cogs"></i>
-                                </a> <!-- /.icon-item -->
-                            </li>
-                            <li class="col-md-4 col-sm-4">
-                                <a href="#tab5" class="icon-item">
-                                    <i class="fa fa-leaf"></i>
-                                </a> <!-- /.icon-item -->
-                            </li>
-                            <li class="col-md-4 col-sm-4">
-                                <a href="#tab6" class="icon-item">
-                                    <i class="fa fa-users"></i>
-                                </a> <!-- /.icon-item -->
-                            </li>
-                        </ul> <!-- /.tabs -->
-                        <div class="col-md-12 col-sm-12">
-                            <div class="toggle-content text-center" id="tab4">
-                                <h3>Our Services</h3>
-                                <p> In varius eros ac est interdum, quis scelerisque elit semper. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-                                    <br><br>Donec mattis enim sit amet nisl faucibus, eu pulvinar nibh facilisis. Aliquam erat volutpat. Vivamus tempus, nisi varius imperdiet molestie, velit mi feugiat felis, sit amet fringilla mi massa sit amet arcu. Mauris dictum nisl id felis lacinia congue. Aliquam lectus nisi, sodales in lacinia quis, lobortis vel sem. Vestibulum elit nisi, placerat eget auctor ut, dictum at libero.</p>
-                            </div>
+// 5. Обработка маршрутов
+// Более агрессивная нормализация для исключения невидимых символов
+$cleaned_path = preg_replace('/[^\w\/-]+/', '', $request_path);
+$normalized_request_path = strtolower(trim($cleaned_path));
+// Убедимся, что он все еще начинается с / если не пустой
+if (!empty($normalized_request_path) && $normalized_request_path[0] !== '/') {
+    $normalized_request_path = '/' . $normalized_request_path;
+} elseif (empty($normalized_request_path) && $request_path === '/') { // Если исходный путь был просто '/', а после чистки стал пустым
+    $normalized_request_path = '/';
+}
 
-                            <div class="toggle-content text-center" id="tab5">
-                                <h3>Our Support</h3>
-                                <p>Nulla consequat nibh mattis metus sodales, at eleifend tortor tempor. Sed auctor lacus felis. Maecenas auctor enim libero, vel viverra nulla fringilla quis. Sed eget aliquet arcu. Suspendisse ac dignissim nunc, id pretium elit. Nunc id neque vel leo semper gravida non ut enim. Cras sed posuere magna.
-                                    <br><br>Morbi eget ante sed felis tristique interdum. In varius eros ac est interdum, quis scelerisque elit semper. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
-                            </div>
+switch ($normalized_request_path) { // Используем нормализованный путь
+    case '/': // Главная страница
+    case '/index.php': // Явно обрабатываем /index.php как главную страницу
+    case '/index': // Добавляем обработку для /index
+        if (class_exists('HomeController')) {
+            $controller = new HomeController(); // Передаем $base_project_url_path, если он нужен конструктору
+            $controller->index();
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Home page controller missing.</p>";
+            error_log("Routing error: HomeController not found for /");
+        }
+        break;
 
-                            <div class="toggle-content text-center" id="tab6">
-                                <h3>Testimonials</h3>
-                                <p>Etiam dictum, quam quis pharetra tincidunt, enim nunc faucibus ipsum, vitae condimentum ligula est eu dui. Sed tincidunt tincidunt sapien non feugiat. Aenean lacinia tempor leo, et euismod ligula porta non. Quisque lectus ante, rutrum eu neque volutpat, euismod lobortis velit. Suspendisse felis risus, tempor ac vehicula eu, volutpat volutpat sem. Donec quis orci nisl. Integer euismod lacus nec risus sollicitudin molestie vel semper turpis.
-                                    <br><br>In varius imperdiet enim quis iaculis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris ac mauris aliquam magna molestie posuere in id elit. Integer semper metus felis, fringilla congue elit commodo a. Donec eget rutrum libero.</p>
-                            </div>
-                        </div> <!-- /.col-md-12 -->
-                    </div> <!-- /.row -->
-                </div> <!-- /.services -->
+    case '/contact/submit':
+        if ($_SERVER["REQUEST_METHOD"] === "POST" && class_exists('ContactController')) {
+            $controller = new ContactController(); // Передаем $base_project_url_path, если нужен
+            $result = $controller->submitForm($_POST);
+            $_SESSION['contact_form_status'] = $result;
+            header("Location: " . $base_project_url_path . "/#menu-4");
+            exit;
+        } else {
+            $_SESSION['contact_form_status'] = ['success' => false, 'message' => 'Invalid request.'];
+            header("Location: " . $base_project_url_path . "/#menu-4");
+            exit;
+        }
+        break;
 
+    case '/user/login':
+    case '/login':
+        // /* // Убираем внешние комментарии, чтобы код выполнился
+        if (class_exists('AuthController') && class_exists('LoginController')) {
+            $dbPath = BASE_PATH . '/contact/db.php';
+            if (file_exists($dbPath) && !class_exists('Database', false)) { require_once $dbPath; }
 
-                <div id="menu-4" class="contact content">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="toggle-content text-center spacing">
-                                <h3>Contact Us</h3>
-                                <p>We are always happy to hear from you! If you have any questions, suggestions, or wishes, write to us and we will definitely respond.
-                                    <br><br><strong>Address:</strong> 2/3 drazovska Street, Nitra 94901, Slovakia
-                                    <br><strong>Company:</strong> KalashnykKP
-                                    <br><strong>Email:</strong> info@kalashnyk.com | <strong>Tel:</strong> +4210952082426</p>
-                            </div>
-                        </div> <!-- /.col-md-12 -->
+            if (!class_exists('Database')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Database component missing for login.</p>";
+                 error_log("Routing error: Database class not found for /login.");
+                 break;
+            }
+            $pdo = Database::getInstance();
+            $authController = new AuthController($pdo);
+            $loginController = new LoginController($authController);
+            $loginController->handleRequest();
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Login components missing.</p>";
+            error_log("Routing error: AuthController or LoginController not found for /login.");
+        }
+        // */ // Убираем внешние комментарии
+        break;
 
-                        <div class="col-md-12">
-                            <div class="contact-form">
-                                <form action="contact/submit.php" method="post" style="flex-direction: column; align-items: center; display: flex;">
-                                    <div style="display:flex; gap:10px; width:100%;">
-                                        <input id="first_name" type="text" name="first_name" placeholder="Name" style="flex:1; min-width:120px; max-width:220px;" required>
-                                        <input type="text" name="last_name" id="last_name" placeholder="Last name" style="flex:1; min-width:120px; max-width:220px;" required>
-                                        <input type="email" name="email" id="email" placeholder="Email" style="flex:1; min-width:180px; max-width:260px;" required>
-                                        <input type="text" name="phone" id="phone" placeholder="Phone" style="flex:1; min-width:120px; max-width:180px;" required>
-                                    </div>
-                                    <textarea name="questions" id="questions" placeholder="Your questions or comments" style="width: 100%; max-width: 600px; min-height: 100px; margin-top: 20px; padding: 10px; border-radius: 5px; border: 1px solid #ccc;" required></textarea>
-                                    <input type="submit" name="send" value="Send Message" id="submit" class="button" style="min-width:180px; border-radius: 10px; margin:20px auto 0 auto; display:block;">
-                                </form>
-                            </div> <!-- /.contact-form -->
-                        </div> <!-- /.col-md-12 -->
-                    </div> <!-- /.row -->
-                </div> <!-- /.contact -->
+    case '/user/save_cookie_consent':
+        if (class_exists('CookieConsentController')) {
+            $controller = new CookieConsentController(); // Передаем $base_project_url_path, если нужен
+            $controller->saveConsent();
+        } else {
+            http_response_code(500); header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Server error: Cookie consent handler missing.']);
+            error_log("Routing error: CookieConsentController not found for /user/save_cookie_consent.");
+        }
+        break;
 
-            </div> <!-- /#menu-container -->
+    case '/user/register':
+    case '/register':
+        if (class_exists('RegisterController')) {
+            $controller = new RegisterController($base_project_url_path);
+            $controller->handleRequest();
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Registration components missing.</p>";
+            error_log("Routing error: RegisterController not found for /register. Processed path: " . htmlspecialchars($request_path));
+        }
+        break;
 
-        </div> <!-- /.col-md-8 -->
+    case '/user/personal_page':
+        if (class_exists('PersonalPageController')) {
+            // Предполагаем, что AuthRedirectController нужен для проверки, авторизован ли пользователь
+            // и для перенаправления, если нет.
+            // Проверка аутентификации и редирект теперь полностью обрабатываются
+            // в конструкторе PersonalPageController.
+            // Поэтому следующий блок удален:
+            // if (class_exists('AuthRedirectController')) { ... }
+            // Убедимся, что Database класс доступен, если он не был загружен автозагрузчиком
+            // и не был подключен ранее (например, для /login)
+            $dbPath = BASE_PATH . '/contact/db.php';
+            if (file_exists($dbPath) && !class_exists('Database', false)) {
+                require_once $dbPath;
+            }
 
-    </div> <!-- /.row -->
-</div> <!-- /.container-fluid -->
+            if (!class_exists('Database')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Database component missing for personal page.</p>";
+                 error_log("Routing error: Database class not found for /user/personal_page.");
+                 break;
+            }
 
-<?php require_once 'tools/footer.php'?>
+            $controller = new PersonalPageController(); // Конструктор PersonalPageController сам обрабатывает редирект, если пользователь не найден или не авторизован
+            
+            $userData = $controller->getUser();
+            $csrfToken = $controller->getCsrfToken();
+            $error = $controller->getError();
 
-<script src="js/vendor/jquery-1.10.1.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-<script src="js/jquery.easing-1.3.js"></script>
-<script src="js/bootstrap.js"></script>
-<script src="js/plugins.js"></script>
-<script src="js/main.js"></script>
-<script type="text/javascript">
-    jQuery(function ($) {
-        $.supersized({
-            slide_interval: 3000,
-            transition: 1,
-            transition_speed: 700,
-            slide_links: 'blank',
-            slides: [
-                {image: 'images/templatemo-slide-1.jpg'},
-                {image: 'images/templatemo-slide-2.jpg'},
-                {image: 'images/templatemo-slide-3.jpg'},
-                {image: 'images/templatemo-slide-4.jpg'}
-            ]
-        });
-    });
-</script>
+            if (!empty($error)) {
+                // Если контроллер установил ошибку (например, проблема с БД при загрузке пользователя)
+                http_response_code(500);
+                echo "<h1>500 - Server Error</h1><p>" . htmlspecialchars($error) . "</p>";
+                error_log("Error in PersonalPageController for /user/personal_page: " . $error);
+            } elseif ($userData) { // Условие class_exists('PersonalPageView') будет проверено ниже, после попытки подключения
+                // Явно подключаем файл представления, так как автозагрузчик ищет только в /classes
+                $personalPageViewPath = BASE_PATH . '/views/PersonalPageView.php';
+                if (file_exists($personalPageViewPath)) {
+                    require_once $personalPageViewPath;
+                }
 
-<!-- Google Map -->
-<script src="http://maps.google.com/maps/api/js?sensor=true"></script>
-<script src="js/vendor/jquery.gmap3.min.js"></script>
-<!-- Google Map Init-->
-<script type="text/javascript">
-    function templatemo_map() {
-        $('.google-map').gmap3({
-            marker:{
-                address: '16.8496189,96.1288854'
-            },
-            map:{
-                options:{
-                    zoom: 15,
-                    scrollwheel: false,
-                    streetViewControl : true
+                if (class_exists('PersonalPageView')) {
+                    $view = new PersonalPageView($userData, $csrfToken);
+                    $view->render();
+                } // Закрывающая скобка для if (class_exists('PersonalPageView'))
+            } elseif (!$userData && empty($error)) {
+                // Это состояние не должно возникать, если конструктор контроллера работает правильно (уже должен был быть редирект)
+                // Но на всякий случай:
+                error_log("Error: User data not found for /user/personal_page, but no error set and no redirect from controller.");
+                header('Location: ' . $base_project_url_path . '/login'); // Перенаправляем на логин
+                exit;
+            } elseif (!class_exists('PersonalPageView')) {
+                http_response_code(500); echo "<h1>500 - Server Error</h1><p>Personal page view component missing.</p>";
+                error_log("Routing error: PersonalPageView class not found for /user/personal_page.");
+            }
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Personal page components missing.</p>";
+            error_log("Routing error: PersonalPageController not found for /user/personal_page.");
+        }
+        break;
+
+    case '/user/order':
+        if (class_exists('OrderController')) {
+            // Убедимся, что Database класс доступен
+            $dbPath = BASE_PATH . '/contact/db.php';
+            if (file_exists($dbPath) && !class_exists('Database', false)) {
+                require_once $dbPath;
+            }
+            if (!class_exists('Database')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Database component missing for order page.</p>";
+                 error_log("Routing error: Database class not found for /user/order.");
+                 break;
+            }
+
+            // Убедимся, что OrderView класс доступен (OrderController его использует)
+            $orderViewPath = BASE_PATH . '/views/OrderView.php';
+            if (file_exists($orderViewPath) && !class_exists('OrderView', false)) {
+                require_once $orderViewPath;
+            }
+            if (!class_exists('OrderView')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Order view component missing.</p>";
+                 error_log("Routing error: OrderView class not found for /user/order.");
+                 break;
+            }
+            // Также OrderController использует Photosession и PhotosessionRepository,
+            // но они должны загружаться автозагрузчиком из /classes
+
+            $controller = new OrderController();
+            $controller->handleRequest(); // Этот метод сам обрабатывает проверку сессии и рендеринг
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Order page components missing.</p>";
+            error_log("Routing error: OrderController not found for /user/order.");
+        }
+        break;
+
+    case '/user/orders-history':
+        if (class_exists('OrdersHistoryController')) {
+            // Убедимся, что Database класс доступен
+            $dbPath = BASE_PATH . '/contact/db.php';
+            if (file_exists($dbPath) && !class_exists('Database', false)) {
+                require_once $dbPath;
+            }
+            if (!class_exists('Database')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Database component missing for orders history page.</p>";
+                 error_log("Routing error: Database class not found for /user/orders-history.");
+                 break;
+            }
+
+            // OrdersHistoryController сам подключает свое представление (OrdersHistoryView)
+            // Убедимся, что Photosession и PhotosessionRepository доступны (должны быть через автозагрузчик)
+
+            $controller = new OrdersHistoryController();
+            $controller->showOrdersHistory(); // Вызываем новый метод
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Orders history page components missing.</p>";
+            error_log("Routing error: OrdersHistoryController not found for /user/orders-history.");
+        }
+        break;
+
+    case '/user/edit-account':
+        // die("DEBUG: Reached /user/edit-account case in switch. Normalized path: " . $normalized_request_path); // Тестовая остановка
+        if (class_exists('EditAccountController')) {
+            // Убедимся, что Database класс доступен
+            $dbPath = BASE_PATH . '/contact/db.php';
+            if (file_exists($dbPath) && !class_exists('Database', false)) {
+                require_once $dbPath;
+            }
+            if (!class_exists('Database')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Database component missing for edit account page.</p>";
+                 error_log("Routing error: Database class not found for /user/edit-account.");
+                 break;
+            }
+
+            // Убедимся, что User класс доступен (используется EditAccountController)
+            // Автозагрузчик должен его подхватить из /user/User.php, если он там есть и настроен в автозагрузчике
+            // Если нет, то:
+            // $userClassPath = BASE_PATH . '/user/User.php';
+            // if (file_exists($userClassPath) && !class_exists('User', false)) {
+            //     require_once $userClassPath;
+            // }
+            // if (!class_exists('User')) {
+            //      http_response_code(500); echo "<h1>500 - Server Error</h1><p>User class component missing for edit account page.</p>";
+            //      error_log("Routing error: User class not found for /user/edit-account.");
+            //      break;
+            // }
+            
+            // Убедимся, что EditAccountView класс доступен
+            $editAccountViewPath = BASE_PATH . '/views/EditAccountView.php';
+            if (file_exists($editAccountViewPath) && !class_exists('EditAccountView', false)) {
+                require_once $editAccountViewPath;
+            }
+             if (!class_exists('EditAccountView')) {
+                 http_response_code(500); echo "<h1>500 - Server Error</h1><p>Edit account view component missing.</p>";
+                 error_log("Routing error: EditAccountView class not found for /user/edit-account.");
+                 break;
+            }
+
+            $controller = new EditAccountController();
+            $controller->handleRequest(); // Обработка POST данных
+            
+            // Отображение представления
+            // Конструктор EditAccountController уже загружает пользователя
+            $userToEdit = $controller->getUser();
+            if ($userToEdit) {
+                $view = new EditAccountView(
+                    $userToEdit,
+                    $controller->getErrorMessage(),
+                    $controller->getSuccessMessage(),
+                    $controller->getCsrfToken()
+                );
+                $view->render();
+            } else {
+                // Если пользователь не загружен (например, из-за ошибки сессии, обработанной в конструкторе контроллера)
+                // Контроллер должен был уже сделать редирект. Если нет, то это проблема.
+                // Можно добавить здесь редирект на логин или отображение общей ошибки.
+                if(empty($controller->getErrorMessage())) { // Если нет специфической ошибки от контроллера
+                    echo "<h1>Error</h1><p>Could not load user data for editing.</p>";
+                } else { // Показываем ошибку от контроллера
+                     echo "<h1>Error</h1><p>" . htmlspecialchars($controller->getErrorMessage()) . "</p>";
                 }
             }
-        });
-    }
-</script>
-</body>
-</html>
+        } else {
+            http_response_code(500); echo "<h1>500 - Server Error</h1><p>Edit account page components missing.</p>";
+            error_log("Routing error: EditAccountController not found for /user/edit-account.");
+        }
+        break;
+
+    default:
+        http_response_code(404);
+        error_log("404 Not Found: Original URI: " . htmlspecialchars($request_uri_original) . ", Processed Path: " . htmlspecialchars($request_path));
+        $view404Path = BASE_PATH . '/views/404_view.php';
+        if (file_exists($view404Path)) {
+            require_once $view404Path;
+        } else {
+            echo "<h1>404 - Page Not Found</h1><p>The page you are looking for ('" . htmlspecialchars($request_path) . "') does not exist.</p>";
+        }
+        break;
+}
+?>

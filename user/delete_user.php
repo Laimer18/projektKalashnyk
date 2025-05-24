@@ -1,15 +1,9 @@
 <?php
-require_once '../contact/db.php';
-require_once 'user_rep.php';
+require_once __DIR__ . '/../classes/UserController.php';
 
-$pdo = Database::getInstance();
+$userController = new UserController();
 
-if (!isset($_GET["id"])) {
-    die("User ID not specified.");
-}
+// Get the user ID from the query string
+$userId = isset($_GET['id']) ? $_GET['id'] : null;
 
-$id = (int)$_GET["id"];
-$userRepo = new UserRepository($pdo);
-$userRepo->delete($id);
-header("Location: users.php");
-exit;
+$userController->deleteUser($userId);

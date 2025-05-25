@@ -1,9 +1,0 @@
-<?php
-// user/order.php
-require_once __DIR__ . '/../classes/OrderController.php';
-
-// session_start() is called within OrderController constructor or its dependencies if needed.
-// No need to call it explicitly here if the controller handles it.
-
-$controller = new OrderController();
-$controller->handleRequest();

@@ -1,9 +1,4 @@
 <?php
-// It's good practice to ensure dependencies are loaded.
-// If you have an autoloader, these might not be strictly necessary here.
-// Assuming db.php is in contact/ and CookieConsentRepository.php is in classes/
-// require_once __DIR__ . '/../contact/db.php'; // Предполагается, что Database загружен автозагрузчиком или в index.php
-// require_once __DIR__ . '/CookieConsentRepository.php'; // Предполагается, что CookieConsentRepository загружен автозагрузчиком
 
 class SessionManager
 {

@@ -52,7 +52,7 @@ class RegisterView
                     <div class="message"><?= htmlspecialchars($this->message) ?></div>
                 <?php endif; ?>
 
-                <form method="post" action=""> {/* action="" is fine as it submits to the current URL (/register) */}
+                <form method="post" action="">
                     <input type="text" name="first_name" placeholder="First Name" value="<?= htmlspecialchars($this->formData['first_name']) ?>" required>
                     <input type="text" name="last_name" placeholder="Last Name" value="<?= htmlspecialchars($this->formData['last_name']) ?>" required>
                     <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($this->formData['email']) ?>" required>
@@ -64,7 +64,6 @@ class RegisterView
                 </form>
 
                 <div class="user-links">
-                    <a href="<?= htmlspecialchars($allUsersUrl) ?>" class="mini-btn">All Users</a>
                     <a href="<?= htmlspecialchars($loginUrl) ?>" class="mini-btn">Login</a>
                     <a href="<?= htmlspecialchars($homeUrl) ?>" class="mini-btn">Home</a>
                 </div>

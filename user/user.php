@@ -1,54 +1,99 @@
 <?php
+
 class User {
     private ?int $id;
-    private string $first_name;
-    private string $last_name;
+    private string $firstName;
+    private string $lastName;
     private string $email;
     private string $phone;
     private ?string $password;
-    private ?string $created_at;
+    private ?string $createdAt;
 
     public function __construct(
-        string $first_name,
-        string $last_name,
+        string $firstName,
+        string $lastName,
         string $email,
         string $phone,
         ?int $id = null,
         ?string $password = null,
-        ?string $created_at = null
+        ?string $createdAt = null
     ) {
-        if (empty($first_name) || empty($last_name) || empty($email)) {
-            throw new InvalidArgumentException("Name, last name, and email are required.");
-        }
+        $this->setFirstName($firstName);
+        $this->setLastName($lastName);
+        $this->setEmail($email);
+        $this->setPhone($phone);
         $this->id = $id;
-        $this->first_name = $first_name;
-        $this->last_name  = $last_name;
-        $this->email      = $email;
-        $this->phone      = $phone;
-        $this->password   = $password;
-        $this->created_at = $created_at;
+        $this->password = $password;
+        $this->createdAt = $createdAt;
     }
 
-    // Геттери
-    public function getId(): ?int { return $this->id; }
-    public function getFirstName(): string { return $this->first_name; }
-    public function getLastName(): string { return $this->last_name; }
-    public function getEmail(): string { return $this->email; }
-    public function getPhone(): string { return $this->phone; }
-    public function getPassword(): ?string { return $this->password; }
-    public function getCreatedAt(): ?string { return $this->created_at; }
+    // --- ГЕТТЕРИ ---
+    public function getId(): ?int {
+        return $this->id;
+    }
 
-    // Сеттери
-    public function setFirstName(string $first_name): void { $this->first_name = $first_name; }
-    public function setLastName(string $last_name): void { $this->last_name = $last_name; }
+    public function getFirstName(): string {
+        return $this->firstName;
+    }
+
+    public function getLastName(): string {
+        return $this->lastName;
+    }
+
+    public function getEmail(): string {
+        return $this->email;
+    }
+
+    public function getPhone(): string {
+        return $this->phone;
+    }
+
+    public function getPassword(): ?string {
+        return $this->password;
+    }
+
+    public function getCreatedAt(): ?string {
+        return $this->createdAt;
+    }
+
+    // --- СЕТТЕРИ ---
+    public function setId(int $id): void {
+        $this->id = $id;
+    }
+
+    public function setFirstName(string $firstName): void {
+        $firstName = trim($firstName);
+        if ($firstName === '') {
+            throw new InvalidArgumentException("First name is required.");
+        }
+        $this->firstName = $firstName;
+    }
+
+    public function setLastName(string $lastName): void {
+        $lastName = trim($lastName);
+        if ($lastName === '') {
+            throw new InvalidArgumentException("Last name is required.");
+        }
+        $this->lastName = $lastName;
+    }
+
     public function setEmail(string $email): void {
+        $email = trim($email);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException("Invalid email format.");
         }
         $this->email = $email;
     }
-    public function setPhone(string $phone): void { $this->phone = $phone; }
-    public function setPassword(string $password): void { $this->password = $password; }
-    public function setId(int $id): void { $this->id = $id; }
+
+    public function setPhone(string $phone): void {
+        $this->phone = trim($phone);
+    }
+
+    public function setPassword(string $password): void {
+        $this->password = $password;
+    }
+
+    public function setCreatedAt(string $createdAt): void {
+        $this->createdAt = $createdAt;
+    }
 }
-?>

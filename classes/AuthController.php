@@ -1,63 +1,164 @@
 <?php
-// Лишний <?php удален
-// Проверяем, определена ли константа BASE_PATH.
-// Она должна быть определена в public/index.php.
-if (!defined('BASE_PATH')) {
-    // Определение BASE_PATH относительно текущего файла.
-    // __DIR__ это 'c:/xampp/htdocs/projekt1/classes'
-    // dirname(__DIR__) это 'c:/xampp/htdocs/projekt1'
-    define('BASE_PATH', dirname(__DIR__));
-}
 
-// SessionManager.php находится в той же директории 'classes',
-// поэтому автозагрузчик из public/index.php должен его найти.
-// require_once '../classes/SessionManager.php'; // Можно удалить, полагаясь на автозагрузчик
+require_once dirname(__DIR__) . '/contact/db.php'; // Підключаємо базу
+require_once dirname(__DIR__) . '/user/User.php';
+require_once dirname(__DIR__) . '/user/UserRepository.php';
+require_once dirname(__DIR__) . '/views/LoginView.php';
+require_once dirname(__DIR__) . '/views/RegisterView.php';
 
-// user_rep.php содержит UserRepository
-require_once BASE_PATH . '/user/UserRepository.php'; // Исправлено имя файла
+class AuthController
+{
+    private UserRepository $userRepo;
+    private string $error = '';
+    private string $baseProjectUrlPath;
 
-class AuthController {
-    private PDO $pdo;
-    private ?string $error;
-    private SessionManager $sessionManager;
+    public function __construct(PDO $pdo, string $baseProjectUrlPath)
 
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
-        $this->error = null;
-        $this->sessionManager = SessionManager::getInstance(); // This will also call start() via SessionManager's constructor
+    {
+        $pdo = Database::getInstance();
+        $this->userRepo = new UserRepository($pdo);
+        $this->baseProjectUrlPath = $baseProjectUrlPath;
     }
 
-    public function login(array $postData): bool {
-        $email = trim($postData['email'] ?? '');
-        $password = $postData['password'] ?? '';
+    public function handleLoginRequest(): void
+    {
+        $data = ['email' => ''];
+        $message = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($this->login($_POST)) {
+                header('Location: ' . $this->baseProjectUrlPath . '/user/personal_page');
+                exit;
+            } else {
+                $message = $this->getError();
+                $data['email'] = trim($_POST['email'] ?? '');
+            }
+        }
+
+        $view = new LoginView($message, $data);
+        $view->render();
+    }
+
+    public function handleRegisterRequest(): void
+    {
+        if (isset($_SESSION['user_id'])) {
+            header("Location: " . $this->baseProjectUrlPath . '/user/personal_page');
+            exit;
+        }
+
+        $message = '';
+        $formData = [
+            'first_name' => '',
+            'last_name'  => '',
+            'email'      => '',
+            'phone'      => '',
+        ];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $result = $this->register($_POST);
+            $message = $result['message'];
+            $formData = $result['formData'];
+
+            if ($result['success']) {
+                header("Location: " . $this->baseProjectUrlPath . '/user/personal_page');
+                exit;
+            }
+        }
+
+        $view = new RegisterView($message, $formData, $this->baseProjectUrlPath);
+        $view->render();
+    }
+
+    public function login(array $data): bool
+    {
+        $email = trim($data['email'] ?? '');
+        $password = $data['password'] ?? '';
 
         if ($email === '' || $password === '') {
-            $this->error = 'Please fill in all fields.';
-            error_log("AuthController::login - Error: " . $this->error . " | Email: " . $email);
+            $this->error = 'Please enter both email and password.';
             return false;
         }
 
-        $userRepo = new UserRepository($this->pdo);
-        $user = $userRepo->getByEmail($email);
-
-        if (!$user) {
-            $this->error = 'Invalid email or password. (User not found)';
-            error_log("AuthController::login - Error: User not found for email: " . $email);
+        $user = $this->userRepo->getByEmail($email);
+        if (!$user || !password_verify($password, $user->getPassword())) {
+            $this->error = 'Invalid email or password.';
             return false;
         }
 
-        if (password_verify($password, $user->getPassword())) {
-            $this->sessionManager->login($user);
-            error_log("AuthController::login - Login successful for email: " . $email . " | User ID: " . $user->getId());
-            return true;
-        }
+        $_SESSION['user_id'] = $user->getId();
+        $_SESSION['user'] = [
+            'id'         => $user->getId(),
+            'first_name' => $user->getFirstName(),
+            'last_name'  => $user->getLastName(),
+            'email'      => $user->getEmail(),
+            'phone'      => $user->getPhone()
+        ];
 
-        $this->error = 'Invalid email or password. (Password mismatch)';
-        error_log("AuthController::login - Error: Password mismatch for email: " . $email);
-        return false;
+        return true;
     }
 
-    public function getError(): ?string {
+    public function register(array $data): array
+    {
+        $formData = [
+            'first_name' => trim($data['first_name'] ?? ''),
+            'last_name'  => trim($data['last_name'] ?? ''),
+            'email'      => trim($data['email'] ?? ''),
+            'phone'      => trim($data['phone'] ?? '')
+        ];
+        $password = $data['password'] ?? '';
+        $confirm  = $data['confirm'] ?? '';
+
+        if (in_array('', [$formData['first_name'], $formData['last_name'], $formData['email'], $password, $confirm], true)) {
+            return ['success' => false, 'message' => 'Please fill in all required fields.', 'formData' => $formData];
+        }
+
+        if (!filter_var($formData['email'], FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'message' => 'Invalid email format.', 'formData' => $formData];
+        }
+
+        if ($this->userRepo->existsByEmail($formData['email'])) {
+            return ['success' => false, 'message' => 'A user with this email already exists.', 'formData' => $formData];
+        }
+
+        if ($password !== $confirm) {
+            return ['success' => false, 'message' => 'Passwords do not match.', 'formData' => $formData];
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $user = new User(
+            $formData['first_name'],
+            $formData['last_name'],
+            $formData['email'],
+            $formData['phone'],
+            null,
+            $hash
+        );
+
+        if ($this->userRepo->add($user)) {
+            $userId = $this->userRepo->getLastInsertId();
+            $_SESSION['user_id'] = $userId;
+            $_SESSION['user'] = [
+                'id'         => $userId,
+                'first_name' => $formData['first_name'],
+                'last_name'  => $formData['last_name'],
+                'email'      => $formData['email'],
+                'phone'      => $formData['phone']
+            ];
+            return ['success' => true, 'message' => '', 'formData' => $formData];
+        }
+
+        return ['success' => false, 'message' => 'Registration failed! Please try again.', 'formData' => $formData];
+    }
+
+    public function logout(): void
+    {
+        session_destroy();
+        header('Location: ' . $this->baseProjectUrlPath . '/login');
+        exit;
+    }
+
+    public function getError(): string
+    {
         return $this->error;
     }
 }

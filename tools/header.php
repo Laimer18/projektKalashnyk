@@ -42,10 +42,10 @@ $facebook_url = "https://www.facebook.com/profile.php?id=61572448198509"; // В�
         <div class="menu-wrapper">
             <ul class="menu">
                 <li><a class="homebutton" href="<?php echo htmlspecialchars($home_url); ?>">Home</a></li>
-                <li><a class="show-1" href="#menu-1">About</a></li> {/* Предполагается, что это якоря на текущей странице */}
+                <li><a class="show-1" href="#menu-1">About</a></li>
                 <li><a class="show-2" href="#menu-2">Services</a></li>
                 <li><a class="show-3" href="#menu-3">Gallery</a></li>
-                <li><a class="show-4" href="#menu-4" onclick="templatemo_map();">Contact</a></li> {/* Якорь + JS */}
+                <li><a class="show-4" href="#menu-4" onclick="templatemo_map();">Contact</a></li>
                 <li><a rel="nofollow" href="<?php echo htmlspecialchars($facebook_url); ?>" target="_parent">External Link</a></li>
             </ul> <!-- /.menu -->
             <a href="#" class="toggle-menu"><i class="fa fa-bars"></i></a>

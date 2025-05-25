@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-session_start();
 
 // require_once __DIR__ . '/../contact/db.php'; // Предполагается, что Database загружен автозагрузчиком или в index.php
 // require_once __DIR__ . '/../user/user.php'; // Предполагается, что User загружен автозагрузчиком

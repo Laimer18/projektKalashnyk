@@ -1,8 +1,0 @@
-<?php
-// user/register1.php
-
-// All includes and session_start are now handled by the RegisterController
-require_once __DIR__ . '/../classes/RegisterController.php';
-
-$controller = new RegisterController();
-$controller->handleRequest();

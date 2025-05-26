@@ -6,15 +6,13 @@ require_once __DIR__ . '/../user/UserRepository.php';
 require_once __DIR__ . '/SessionManager.php';
 require_once __DIR__ . '/../contact/db.php';
 
-
-
 class EditUserController
 {
     private PDO $pdo;
     private UserRepository $userRepo;
     private SessionManager $sessionManager;
-    private ?User $user = null;           // Поточний залогінений користувач
-    private ?User $editingUser = null;    // Користувач, якого редагуємо (себе або іншого)
+    private ?User $user = null;           // Currently logged-in user
+    private ?User $editingUser = null;    // User being edited (self or another)
     private ?string $errorMessage = null;
     private ?string $successMessage = null;
     private string $csrfToken = '';
@@ -33,7 +31,7 @@ class EditUserController
 
         $this->user = $this->userRepo->getById($this->sessionManager->getUserId());
         if (!$this->user) {
-            $this->errorMessage = "Поточний користувач не знайдений.";
+            $this->errorMessage = "Current user not found.";
             return;
         }
 
@@ -56,7 +54,7 @@ class EditUserController
         } else {
             $this->editingUser = $this->userRepo->getById($editId);
             if (!$this->editingUser) {
-                $this->errorMessage = "Користувач для редагування не знайдений.";
+                $this->errorMessage = "User not found to edit.";
                 return;
             }
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -68,7 +66,7 @@ class EditUserController
     private function processOwnAccountForm(array $postData): void
     {
         if (!isset($postData['csrf_token']) || $postData['csrf_token'] !== $this->csrfToken) {
-            $this->errorMessage = 'Неправильний CSRF токен.';
+            $this->errorMessage = 'Incorrect CSRF token.';
             return;
         }
 
@@ -81,15 +79,15 @@ class EditUserController
         $confirmPassword = $postData['confirm_password'] ?? '';
 
         if ($firstName === '' || $lastName === '' || $email === '') {
-            $this->errorMessage = "Ім'я, прізвище та email є обов'язковими.";
+            $this->errorMessage = "First name, last name, and email are required.";
             return;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errorMessage = "Невірний формат email.";
+            $this->errorMessage = "Invalid email format.";
             return;
         }
         if ($email !== $this->editingUser->getEmail() && $this->userRepo->existsByEmail($email)) {
-            $this->errorMessage = 'Цей email вже використовується.';
+            $this->errorMessage = 'This email is already in use.';
             return;
         }
 
@@ -100,19 +98,19 @@ class EditUserController
 
         if ($currentPassword !== '' || $newPassword !== '' || $confirmPassword !== '') {
             if ($currentPassword === '' || $newPassword === '' || $confirmPassword === '') {
-                $this->errorMessage = 'Для зміни пароля заповніть всі відповідні поля.';
+                $this->errorMessage = 'To change your password, fill in all the appropriate fields.';
                 return;
             }
             if (!password_verify($currentPassword, $this->editingUser->getPassword())) {
-                $this->errorMessage = 'Поточний пароль неправильний.';
+                $this->errorMessage = 'Current password is incorrect.';
                 return;
             }
             if ($newPassword !== $confirmPassword) {
-                $this->errorMessage = 'Нові паролі не співпадають.';
+                $this->errorMessage = 'New passwords do not match.';
                 return;
             }
             if (strlen($newPassword) < 6) {
-                $this->errorMessage = 'Новий пароль повинен бути щонайменше 6 символів.';
+                $this->errorMessage = 'The new password must be at least 6 characters long.';
                 return;
             }
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
@@ -120,7 +118,7 @@ class EditUserController
         }
 
         if ($this->userRepo->update($this->editingUser)) {
-            $this->successMessage = 'Акаунт успішно оновлено.';
+            $this->successMessage = 'Account updated successfully.';
 
             if ($this->editingUser->getId() === $this->user->getId()) {
                 $_SESSION['user']['first_name'] = $firstName;
@@ -129,7 +127,7 @@ class EditUserController
                 $_SESSION['user']['phone'] = $phone;
             }
         } else {
-            $this->errorMessage = 'Не вдалося оновити акаунт.';
+            $this->errorMessage = 'Failed to update account.';
         }
     }
 
@@ -141,15 +139,15 @@ class EditUserController
         $phone = trim($postData['phone'] ?? '');
 
         if ($firstName === '' || $lastName === '' || $email === '') {
-            $this->errorMessage = "Ім'я, прізвище та email є обов'язковими.";
+            $this->errorMessage = "First name, last name, and email are required.";
             return;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errorMessage = "Невірний формат email.";
+            $this->errorMessage = "Invalid email format.";
             return;
         }
         if ($email !== $this->editingUser->getEmail() && $this->userRepo->existsByEmail($email)) {
-            $this->errorMessage = 'Цей email вже використовується іншим користувачем.';
+            $this->errorMessage = 'This email is already used by another user.';
             return;
         }
 
@@ -162,7 +160,7 @@ class EditUserController
             header('Location: users.php');
             exit;
         } else {
-            $this->errorMessage = 'Не вдалося оновити користувача.';
+            $this->errorMessage = 'Failed to update user.';
         }
     }
 

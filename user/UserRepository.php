@@ -1,12 +1,7 @@
 <?php
 
-// Проверяем, определена ли константа BASE_PATH, и если нет, пытаемся ее определить.
-// Это для случаев, когда файл может быть подключен из контекста, где BASE_PATH еще не установлен.
-// В идеале, все подключения должны идти через public/index.php, где BASE_PATH определяется один раз.
 if (!defined('BASE_PATH')) {
-    // Определение BASE_PATH относительно текущего файла.
-    // __DIR__ это 'c:/xampp/htdocs/projekt1/user'
-    // dirname(__DIR__) это 'c:/xampp/htdocs/projekt1'
+
     define('BASE_PATH', dirname(__DIR__));
 }
 

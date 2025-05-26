@@ -12,15 +12,11 @@ class PersonalPageController
     {
 
         if (session_status() == PHP_SESSION_NONE) {
-            // Этого не должно происходить, если index.php работает корректно,
-            // но на всякий случай, чтобы избежать ошибок при прямом доступе или тестах.
             session_start();
         }
 
         if (!isset($_SESSION['user_id'])) {
-            // Предполагаем, что $base_project_url_path будет доступен или передан,
-            // но для простоты пока захардкодим. В идеале, его нужно передавать в конструктор или получать из конфигурации.
-            $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login'; // или /user/register если это страница регистрации
+            $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login';
             header('Location: ' . $loginPageUrl);
             exit;
         }
@@ -51,7 +47,6 @@ class PersonalPageController
 
             if (!$user) {
                 session_destroy();
-                // Аналогично предыдущему редиректу
                 $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login';
                 header('Location: ' . $loginPageUrl);
                 exit;
@@ -74,7 +69,6 @@ class PersonalPageController
             $stmt->execute([$_SESSION['user_id']]);
 
             session_destroy();
-            // Редирект на главную страницу
             $homePageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/';
             header('Location: ' . $homePageUrl);
             exit;

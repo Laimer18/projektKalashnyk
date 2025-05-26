@@ -41,22 +41,18 @@ class SessionManager
         $_SESSION['user_id'] = $userIdToSet;
         $_SESSION['email'] = $user->getEmail(); // Предполагаем, что getEmail() существует и нужен
         error_log("SessionManager::login - Set user_id: " . $userIdToSet . " | Session ID: " . session_id());
-
-        // Fetch and store cookie consent status from the cookie_consents table
         $userId = $user->getId();
         if ($userId) {
             try {
                 $pdo = Database::getInstance();
                 $cookieConsentRepo = new CookieConsentRepository($pdo);
                 $consentStatus = $cookieConsentRepo->getUserConsentStatus($userId);
-                $_SESSION['user_cookie_consent_status'] = $consentStatus ?? 'pending'; // Default to 'pending' if null
+                $_SESSION['user_cookie_consent_status'] = $consentStatus ?? 'pending';
             } catch (Exception $e) {
-                // Log error $e->getMessage()
-                // Fallback in case of DB error during consent status fetch
                 $_SESSION['user_cookie_consent_status'] = 'pending';
             }
         } else {
-            // Should not happen if $user object is valid, but as a safeguard
+
             $_SESSION['user_cookie_consent_status'] = 'pending';
         }
     }

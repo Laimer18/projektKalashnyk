@@ -28,27 +28,26 @@ class HomeController {
     public function index(): void {
         $galleryItems = $this->getGalleryData();
 
-        $contact_form_status_message = '';
-        $contact_form_status_type = '';
+        $contactFormStatusMessage = '';
+        $contactFormStatusType = '';
 
         if (isset($_SESSION['contact_form_status'])) {
             $status = $_SESSION['contact_form_status'];
 
             if (is_array($status)) {
-                $contact_form_status_message = htmlspecialchars($status['message'] ?? 'An unexpected error occurred.');
-                $contact_form_status_type = !empty($status['success']) ? 'success' : 'error';
+                $contactFormStatusMessage = htmlspecialchars($status['message'] ?? 'An unexpected error occurred.');
+                $contactFormStatusType = !empty($status['success']) ? 'success' : 'error';
             } else {
-                // Старий варіант, якщо просто 'success' чи 'error'
-                $contact_form_status_type = $status === 'success' ? 'success' : 'error';
-                $contact_form_status_message = $status === 'success'
-                    ? 'Форма успішно надіслана.'
-                    : 'Сталася помилка при надсиланні форми.';
+                // Old version, if just 'success' or 'error'
+                $contactFormStatusType = $status === 'success' ? 'success' : 'error';
+                $contactFormStatusMessage = $status === 'success'
+                    ? 'Form submitted successfully.'
+                    : 'An error occurred while submitting the form.';
             }
 
             unset($_SESSION['contact_form_status']);
         }
-
-        $mainPageViewPath = BASE_PATH . '../views/main_page_view.php';
+        $mainPageViewPath = __DIR__ . '/../views/main_page_view.php';
 
         if (file_exists($mainPageViewPath)) {
             require $mainPageViewPath;

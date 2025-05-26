@@ -17,13 +17,13 @@ class UserListView
         <head>
             <meta charset="UTF-8">
             <title>Users List</title>
-            <link rel="stylesheet" href="../login.css"> <!-- Adjust path to your CSS, relative to user/users.php -->
+            <link rel="stylesheet" href="../login.css">
         </head>
         <body>
 
         <h1>Users List</h1>
 
-        <a href="register1.php">Back to Registration</a> <!-- Assumes register1.php is in the same directory -->
+        <a href="register1.php">Back to Registration</a>
 
         <table border="1" cellpadding="5" cellspacing="0">
             <thead>
@@ -43,7 +43,7 @@ class UserListView
                         <td><?= htmlspecialchars($user->getEmail()) ?></td>
                         <td><?= htmlspecialchars($user->getPhone()) ?></td>
                         <td>
-                            <!-- Assumes edit_user.php and delete_user.php are in the same directory -->
+
                             <a href="edit_user.php?id=<?= urlencode($user->getId()) ?>">Edit</a> |
                             <a href="delete_user.php?id=<?= urlencode($user->getId()) ?>" onclick="return confirm('Delete user?')">Delete</a>
                         </td>

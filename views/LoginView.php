@@ -12,7 +12,7 @@ class LoginView {
     }
 
     public function render(): void {
-        $loginCssPath = $this->baseProjectPath . '/assets/css/login.css';
+        $loginCssPath = $this->baseProjectPath . '/login.css';
         $registerUrl = $this->baseProjectPath . '/register';
         ?>
         <!DOCTYPE html>

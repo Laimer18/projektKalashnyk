@@ -1,7 +1,6 @@
 <?php
-require_once 'classes/Router.php';
+require_once __DIR__ . '/classes/Router.php';
 
-
-$basePath = ''; // або '/myproject', якщо сайт розміщений не в корені
+$basePath = '/projekt1'; // це ВАЖЛИВО!
 $router = new Router($basePath);
 $router->route();

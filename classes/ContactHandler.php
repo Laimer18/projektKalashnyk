@@ -18,12 +18,7 @@ class ContactHandler
         $this->pdo = $pdo;
     }
 
-    /**
-     * Приймає дані з форми, виконує валідацію і зберігає в базу
-     *
-     * @param array $postData
-     * @return bool true — успішно, false — помилка
-     */
+
     public function handleForm(array $postData): bool
     {
         $this->firstName = trim($postData['first_name'] ?? '');
@@ -37,17 +32,15 @@ class ContactHandler
         }
 
         if ($this->save()) {
-            $this->successMessage = 'Ваше повідомлення успішно надіслано! Скоро ми з вами зв’яжемося.';
+            $this->successMessage = 'Your message has been sent successfully! We will contact you soon.';
             return true;
         } else {
-            $this->errorMessage = 'Сталася помилка під час відправки повідомлення. Спробуйте пізніше.';
+            $this->errorMessage = 'An error occurred while sending the message. Please try again later.';
             return false;
         }
     }
 
-    /**
-     * Валідація введених даних
-     */
+
     private function validate(): bool
     {
         if (
@@ -57,22 +50,22 @@ class ContactHandler
             $this->phone === '' ||
             $this->question === ''
         ) {
-            $this->errorMessage = 'Всі поля є обов’язковими для заповнення.';
+            $this->errorMessage = 'All fields are required.';
             return false;
         }
 
         if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-            $this->errorMessage = 'Некоректний формат email.';
+            $this->errorMessage = 'Invalid email format.';
             return false;
         }
 
-        // Додай додаткову валідацію телефону, якщо потрібно
+        // Add additional phone validation if needed
 
         return true;
     }
 
     /**
-     * Збереження повідомлення в базу
+     * Saves the message to the database
      */
     private function save(): bool
     {
@@ -100,7 +93,7 @@ class ContactHandler
         return $this->successMessage;
     }
 
-    // За потреби можна додати геттери для полів (наприклад, щоб відновити введені дані у формі)
+    // Getters can be added if needed (e.g. to repopulate form fields)
     public function getFirstName(): string
     {
         return $this->firstName;

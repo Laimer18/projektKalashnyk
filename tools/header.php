@@ -1,16 +1,9 @@
 <?php
-// session_start() теперь должен вызываться в public/index.php или через SessionManager.
-// Убедитесь, что BASE_PATH определен в точке входа (public/index.php)
+
 if (!defined('BASE_PATH')) {
-    // Попытка определить BASE_PATH, если он не установлен (например, при прямом доступе к файлу, что не рекомендуется)
-    // Это очень упрощенное определение и может потребовать корректировки в зависимости от структуры.
-    // В идеале, этот файл должен всегда подключаться из public/index.php, где BASE_PATH уже определен.
     define('BASE_PATH', dirname(__DIR__));
 }
 
-// Подключаем NavigationHelper, если он еще не загружен автозагрузчиком
-// Автозагрузчик в public/index.php должен справиться с этим, если класс назван корректно.
-// Но для надежности, если этот файл может вызываться отдельно (не рекомендуется):
 if (!class_exists('NavigationHelper')) {
     $navHelperPath = BASE_PATH . '/classes/NavigationHelper.php';
     if (file_exists($navHelperPath)) {
@@ -18,15 +11,12 @@ if (!class_exists('NavigationHelper')) {
     }
 }
 
-// Определяем базовый URL проекта. Это значение должно быть консистентным по всему проекту.
-// В public/index.php мы использовали $base_project_path. Здесь можно использовать константу или передавать как параметр.
-// Для простоты пока оставим так, но в будущем это лучше унифицировать.
-$baseProjectPathForUrls = '/projekt1'; // Это должно совпадать с $base_project_path в public/index.php
+$baseProjectPathForUrls = '/projekt1';
 
 $account_url = class_exists('NavigationHelper') ? NavigationHelper::getAccountUrl($baseProjectPathForUrls) : $baseProjectPathForUrls . '/user/register1.php'; // Фоллбэк
 $logo_image_url = class_exists('NavigationHelper') ? NavigationHelper::getAssetUrl('images/logo.png', $baseProjectPathForUrls) : $baseProjectPathForUrls . '/images/logo.png';
-// Для других ссылок, если они должны быть абсолютными от корня сайта + $baseProjectPathForUrls
-$home_url = $baseProjectPathForUrls . '/'; // Или $baseProjectPathForUrls, если главная не в корне
+
+$home_url = $baseProjectPathForUrls . '/';
 $facebook_url = "https://www.facebook.com/profile.php?id=61572448198509"; // Внешняя ссылка остается как есть
 
 ?>

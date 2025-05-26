@@ -1,10 +1,6 @@
 <?php
 declare(strict_types=1);
 
-// require_once '../contact/db.php'; // Заменено на использование автозагрузчика или прямого подключения в index.php
-// Предполагается, что Database класс будет доступен через автозагрузчик или уже подключен в index.php
-// Если нет, то в index.php перед созданием контроллера нужно будет добавить:
-// if (!class_exists('Database')) { require_once BASE_PATH . '/contact/db.php'; }
 
 class PersonalPageController
 {
@@ -14,8 +10,7 @@ class PersonalPageController
 
     public function __construct()
     {
-        // session_start(); // Сессия уже должна быть запущена в index.php
-        // Проверяем, запущена ли сессия, перед обращением к $_SESSION
+
         if (session_status() == PHP_SESSION_NONE) {
             // Этого не должно происходить, если index.php работает корректно,
             // но на всякий случай, чтобы избежать ошибок при прямом доступе или тестах.

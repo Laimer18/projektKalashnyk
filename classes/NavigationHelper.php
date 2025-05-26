@@ -14,9 +14,6 @@ class NavigationHelper {
      * @return string URL для страницы аккаунта.
      */
     public static function getAccountUrl(string $basePath = '/projekt1'): string {
-        // ВРЕМЕННАЯ ОТЛАДКА
-        // error_log("NavigationHelper::getAccountUrl() called. Session user_id: " . ($_SESSION['user_id'] ?? 'NOT SET'));
-        // var_dump(isset($_SESSION['user_id']), $_SESSION['user_id'] ?? 'NOT SET'); // Раскомментируйте для вывода в браузер
 
         $currentSessionUserId = $_SESSION['user_id'] ?? 'NOT SET';
         $sessionId = session_id() ?: 'NO_ACTIVE_SESSION';

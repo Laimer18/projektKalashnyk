@@ -1,8 +1,5 @@
 <?php
 
-// NavigationHelper должен быть доступен через автозагрузчик
-// или подключен до вызова этого файла.
-// BASE_PATH должен быть определен в index.php
 if (!defined('BASE_PATH')) {
     define('BASE_PATH', dirname(__DIR__)); // views/ -> /
 }

@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__) . '/contact/db.php'; // Підключаємо базу
+require_once dirname(__DIR__) . '/contact/db.php';
 require_once dirname(__DIR__) . '/user/User.php';
 require_once dirname(__DIR__) . '/user/UserRepository.php';
 require_once dirname(__DIR__) . '/views/LoginView.php';
@@ -13,9 +13,11 @@ class AuthController
     private string $baseProjectUrlPath;
 
     public function __construct(PDO $pdo, string $baseProjectUrlPath)
-
     {
-        $pdo = Database::getInstance();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $this->userRepo = new UserRepository($pdo);
         $this->baseProjectUrlPath = $baseProjectUrlPath;
     }
@@ -160,5 +162,16 @@ class AuthController
     public function getError(): string
     {
         return $this->error;
+    }
+
+    public function handleRedirect(): void
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . $this->baseProjectUrlPath . '/user/register1.php');
+            exit();
+        } else {
+            header('Location: ' . $this->baseProjectUrlPath . '/user/personal_page.php');
+            exit();
+        }
     }
 }

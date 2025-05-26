@@ -1,10 +1,4 @@
 <?php
-// session_start(); // Сессия уже должна быть запущена в index.php
-
-// require_once __DIR__ . '/../contact/db.php'; // Будет подключен в index.php или через автозагрузчик
-// require_once __DIR__ . '/../classes/Photosession.php'; // Должен быть загружен автозагрузчиком
-// require_once __DIR__ . '/../classes/PhotosessionRepository.php'; // Должен быть загружен автозагрузчиком
-
 class OrdersHistoryController
 {
     private PDO $pdo;
@@ -42,10 +36,7 @@ class OrdersHistoryController
             } else {
                 // Не удалось получить email, возможно, стоит показать ошибку или перенаправить
                 error_log("OrdersHistoryController: Could not retrieve email for user_id: " . $_SESSION['user_id']);
-                // Можно отобразить сообщение об ошибке или перенаправить
-                // Для простоты пока оставим так, но это может привести к отсутствию заказов, если email критичен
-                // Если getByEmail требует email, то здесь нужно обработать ошибку более строго.
-                // Поскольку getByEmail используется, email критичен.
+
                 echo "Error: Could not retrieve user email to fetch order history.";
                 return;
             }
@@ -71,40 +62,6 @@ class OrdersHistoryController
             echo "Error: Orders history view file is missing.";
         }
     }
-    
-    // Старый метод loadOrders больше не нужен в таком виде, логика перенесена в showOrdersHistory
-    /*
-    public function loadOrders(): void
-    {
-        if (!isset($_SESSION['user_id'])) { // Изменено на user_id
-            $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login';
-            header('Location: ' . $loginPageUrl);
-            exit;
-        }
-
-        // Логика получения email пользователя (пример)
-        $email = ''; // Нужно получить email пользователя, например, из $_SESSION['user_email'] или по $_SESSION['user_id'] из БД
-        if (isset($_SESSION['user_email'])) {
-            $email = $_SESSION['user_email'];
-        } elseif (isset($_SESSION['user_id'])) {
-            // Пример получения email из БД
-            $stmt = $this->pdo->prepare("SELECT email FROM users WHERE id = ?");
-            $stmt->execute([$_SESSION['user_id']]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($user) {
-                $email = $user['email'];
-            }
-        }
-
-        if (empty($email)) {
-            // Обработка случая, если email не удалось получить
-            error_log("OrdersHistoryController: Email not found for user_id: " . $_SESSION['user_id']);
-            $this->orders = []; // Показываем пустую историю
-            return;
-        }
-        $this->orders = $this->photosessionRepo->getByEmail($email);
-    }
-    */
 
     public function getOrders(): array
     {

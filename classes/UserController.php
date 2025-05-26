@@ -1,26 +1,46 @@
 <?php
+session_start();
 
 require_once __DIR__ . '/../contact/db.php';
-require_once __DIR__ . '/../user/user_rep.php'; // Assuming UserRepository is in user_rep.php
+require_once __DIR__ . '/../user/user.php';
+require_once __DIR__ . '/../user/user_rep.php';
 
-class UserController {
-    private $userRepository;
+class UserController
+{
+    private UserRepository $userRepository;
+    private array $users = [];
 
-    public function __construct() {
-        $pdo = Database::getInstance();
-        $this->userRepository = new UserRepository($pdo);
+    public function __construct()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: login.php');
+            exit;
+        }
+
+        $this->userRepository = new UserRepository(Database::getInstance());
     }
 
-    public function deleteUser($id) {
+    // Метод для отримання списку користувачів
+    public function loadUsers(): void
+    {
+        $this->users = $this->userRepository->getAll();
+    }
+
+    // Метод для отримання вже завантажених користувачів
+    public function getUsers(): array
+    {
+        return $this->users;
+    }
+
+    // Метод для видалення користувача за id
+    public function deleteUser($id): void
+    {
         if (!isset($id) || !is_numeric($id)) {
-            // It's better to handle errors more gracefully,
-            // but for now, we'll stick to the original script's behavior.
-            // In a real application, you might throw an exception or return an error message.
             die("User ID not specified or invalid.");
         }
 
         $this->userRepository->delete((int)$id);
-        header("Location: users.php"); // Assuming users.php is in the same directory as the original delete_user.php
+        header("Location: users.php");
         exit;
     }
 }

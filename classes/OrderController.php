@@ -1,9 +1,4 @@
 <?php
-// session_start(); // Сессия уже должна быть запущена в index.php
-// require_once __DIR__ . '/../contact/db.php'; // Будет подключен в index.php или через автозагрузчик
-// require_once __DIR__ . '/../classes/Photosession.php'; // Должен быть загружен автозагрузчиком
-// require_once __DIR__ . '/../classes/PhotosessionRepository.php'; // Должен быть загружен автозагрузчиком
-// require_once __DIR__ . '/../views/OrderView.php'; // Будет подключен в index.php перед renderView
 
 class OrderController
 {
@@ -32,12 +27,7 @@ class OrderController
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Предполагаем, что email пользователя можно получить из БД по user_id, если он нужен
-            // или он уже есть в $_SESSION['user_email'] после логина.
-            // Для processForm нужен email. Если его нет в сессии, нужно его получить.
-            // Пока оставим $_SESSION['user']['email'], но это может потребовать доработки при логине.
-            // Лучше получать email из базы данных по $_SESSION['user_id'] внутри processForm или передавать его.
-            // Для упрощения, предположим, что $_SESSION['user_email'] устанавливается при логине.
+
             $userEmail = $_SESSION['user_email'] ?? ''; // Или получить из БД по $_SESSION['user_id']
             if (empty($userEmail) && isset($_SESSION['user_id'])) {
                 // Попытка получить email из БД, если его нет в сессии, но есть user_id
@@ -100,8 +90,3 @@ class OrderController
         return $this->message;
     }
 }
-
-// The instantiation and request handling will be in user/order.php
-// So, remove these lines from here:
-// $controller = new OrderController();
-// $controller->handleRequest();

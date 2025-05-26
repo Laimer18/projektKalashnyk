@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../contact/db.php';
 
 class PhotoSession
 {
@@ -29,7 +28,6 @@ class PhotoSession
         $this->created_at = $created_at;
     }
 
-    // Getters
     public function getId(): ?int
     {
         return $this->id;

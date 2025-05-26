@@ -24,9 +24,7 @@ if (!class_exists('NavigationHelper')) {
         require_once $navHelperPath;
     }
 }
-// $base_project_url_path должен быть доступен, если NavigationHelper его использует по умолчанию или если он передается.
-// В NavigationHelper::getAssetUrl мы передаем его явно.
-// Для простоты, если он не установлен, установим значение по умолчанию.
+
 $base_project_url_path = $base_project_url_path ?? '/projekt1';
 
 ?>
@@ -245,7 +243,6 @@ $base_project_url_path = $base_project_url_path ?? '/projekt1';
 </div>
 
 <?php
-// footer.php должен использовать NavigationHelper для своих URL и быть доступным
 $footerPath = BASE_PATH . '/tools/footer.php';
 if (file_exists($footerPath)) {
     require $footerPath;

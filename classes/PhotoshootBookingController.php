@@ -1,7 +1,7 @@
 <?php
 require_once '../contact/db.php';
-require_once '../classes/Photosession.php';
-require_once '../classes/PhotosessionRepository.php';
+require_once '../classes/PhotoSession.php';
+require_once '../classes/PhotoSession.php.php';
 
 class PhotoshootBookingController
 {

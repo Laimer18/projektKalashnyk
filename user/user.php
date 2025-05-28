@@ -56,7 +56,6 @@ class User {
         return $this->createdAt;
     }
 
-    // --- СЕТТЕРИ ---
     public function setId(int $id): void {
         $this->id = $id;
     }

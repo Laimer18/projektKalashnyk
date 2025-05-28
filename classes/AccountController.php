@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-require_once '../contact/db.php';    // Клас Database для PDO
-require_once 'user_rep.php';          // UserRepository
-require_once 'user.php';              // Клас User
+require_once '../contact/db.php';
+require_once 'user_rep.php';
+require_once 'user.php';
 
 class AccountController
 {

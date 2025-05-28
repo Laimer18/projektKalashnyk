@@ -34,13 +34,11 @@ class UserRepository
         ]);
     }
 
-    // Повертає ID останнього вставленого користувача
     public function getLastInsertId(): string
     {
         return $this->pdo->lastInsertId();
     }
 
-    // Перевірка чи існує користувач з таким email
     public function existsByEmail(string $email): bool
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
@@ -48,7 +46,6 @@ class UserRepository
         return (bool) $stmt->fetchColumn();
     }
 
-    // Отримати всіх користувачів
     public function getAll(): array
     {
         $stmt = $this->pdo->query("SELECT * FROM users");
@@ -61,7 +58,6 @@ class UserRepository
         return $users;
     }
 
-    // Отримати користувача за ID
     public function getById(int $id): ?User
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
@@ -71,7 +67,6 @@ class UserRepository
         return $row ? $this->mapRowToUser($row) : null;
     }
 
-    // Отримати користувача за email
     public function getByEmail(string $email): ?User
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
@@ -81,7 +76,6 @@ class UserRepository
         return $row ? $this->mapRowToUser($row) : null;
     }
 
-    // Оновити користувача
     public function update(User $user): bool
     {
         $stmt = $this->pdo->prepare("
@@ -100,14 +94,12 @@ class UserRepository
         ]);
     }
 
-    // Видалити користувача
     public function delete(int $id): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }
 
-    // Приватний метод для мапінгу рядка БД у об'єкт User
     private function mapRowToUser(array $row): User
     {
         return new User(

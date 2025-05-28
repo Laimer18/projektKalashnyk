@@ -1,5 +1,5 @@
 <?php
-// Убедимся, что сессия запущена перед использованием SessionManager
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -10,7 +10,6 @@ if (class_exists('SessionManager')) {
     $sessionManager = SessionManager::getInstance();
     $sessionManager->logout();
 } else {
-    // Если SessionManager не найден, просто уничтожаем сессию стандартным способом
     session_unset();
     session_destroy();
     error_log("Logout.php: SessionManager class not found. Used standard session destruction.");

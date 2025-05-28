@@ -38,7 +38,6 @@ class HomeController {
                 $contactFormStatusMessage = htmlspecialchars($status['message'] ?? 'An unexpected error occurred.');
                 $contactFormStatusType = !empty($status['success']) ? 'success' : 'error';
             } else {
-                // Old version, if just 'success' or 'error'
                 $contactFormStatusType = $status === 'success' ? 'success' : 'error';
                 $contactFormStatusMessage = $status === 'success'
                     ? 'Form submitted successfully.'

@@ -20,19 +20,16 @@ class UserController
         $this->userRepository = new UserRepository(Database::getInstance());
     }
 
-    // Метод для отримання списку користувачів
     public function loadUsers(): void
     {
         $this->users = $this->userRepository->getAll();
     }
 
-    // Метод для отримання вже завантажених користувачів
     public function getUsers(): array
     {
         return $this->users;
     }
 
-    // Метод для видалення користувача за id
     public function deleteUser($id): void
     {
         if (!isset($id) || !is_numeric($id)) {

@@ -9,12 +9,9 @@ class SessionManager
         $this->start();
     }
 
-    // Забороняємо клонування об'єкта
     private function __clone()
     {
     }
-
-    // Забороняємо десеріалізацію
     public function __wakeup()
     {
         throw new \Exception("Cannot unserialize a Singleton");
@@ -39,7 +36,7 @@ class SessionManager
     {
         $userIdToSet = $user->getId();
         $_SESSION['user_id'] = $userIdToSet;
-        $_SESSION['email'] = $user->getEmail(); // Предполагаем, что getEmail() существует и нужен
+        $_SESSION['email'] = $user->getEmail();
         error_log("SessionManager::login - Set user_id: " . $userIdToSet . " | Session ID: " . session_id());
         $userId = $user->getId();
         if ($userId) {
@@ -74,7 +71,6 @@ class SessionManager
         return $_SESSION['user_id'] ?? null;
     }
 
-    // Для додаткової роботи із сесією
     public function set(string $key, $value): void
     {
         $_SESSION[$key] = $value;

@@ -1,23 +1,14 @@
 <?php
-// Этот файл теперь является представлением (view), которое подключается из HomeController.
-// Предполагается, что HomeController уже инициализировал сессию (через public/index.php -> SessionManager)
-// и определил переменные:
-// $galleryItems (массив данных для галереи)
-// $contact_form_status_message (строка, сообщение о статусе формы)
-// $contact_form_status_type ('success' или 'error')
 
-// Убедимся, что переменные существуют, чтобы избежать ошибок, если view вызывается напрямую (не рекомендуется)
 $galleryItems = $galleryItems ?? [];
 $contact_form_status_message = $contact_form_status_message ?? '';
 $contact_form_status_type = $contact_form_status_type ?? '';
 
-// BASE_PATH должен быть определен в index.php (маршрутизаторе) и доступен здесь.
 if (!defined('BASE_PATH')) {
-    // Фоллбэк, если view вызывается не из HomeController или BASE_PATH не был установлен.
-    // Для views/main_page_view.php, __DIR__ это .../views, dirname(__DIR__) это корень проекта.
+
     define('BASE_PATH', dirname(__DIR__));
 }
-// NavigationHelper должен быть доступен (автозагружен)
+
 if (!class_exists('NavigationHelper')) {
     $navHelperPath = BASE_PATH . '/classes/NavigationHelper.php';
     if (file_exists($navHelperPath)) {
@@ -57,7 +48,7 @@ $base_project_url_path = $base_project_url_path ?? '/projekt1';
     <div class="row">
 
         <?php
-        // header.php должен использовать NavigationHelper для своих URL и быть доступным
+
         $headerPath = BASE_PATH . '/tools/header.php';
         if (file_exists($headerPath)) {
             require $headerPath;
@@ -282,7 +273,7 @@ if (file_exists($footerPath)) {
     function templatemo_map() {
         $('.google-map').gmap3({
             marker:{
-                address: '16.8496189,96.1288854' // Оставьте как есть или сделайте настраиваемым
+                address: '16.8496189,96.1288854'
             },
             map:{
                 options:{

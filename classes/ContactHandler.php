@@ -64,9 +64,7 @@ class ContactHandler
         return true;
     }
 
-    /**
-     * Saves the message to the database
-     */
+
     private function save(): bool
     {
         $sql = "INSERT INTO contacts (first_name, last_name, email, phone, question, created_at)

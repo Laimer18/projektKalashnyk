@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
-
+/**
+ * Контролер для персональної сторінки користувача.
+ * Завантажує дані користувача, обробляє видалення акаунту з перевіркою CSRF.
+ */
 class PersonalPageController
 {
     private PDO $pdo;
@@ -10,27 +13,32 @@ class PersonalPageController
 
     public function __construct()
     {
-
+        // Ініціалізація сесії
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
+        // Перевірка авторизації
         if (!isset($_SESSION['user_id'])) {
             $loginPageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/login';
             header('Location: ' . $loginPageUrl);
             exit;
         }
 
+        // Підключення до бази
         $this->pdo = Database::getInstance();
+
+        // Генерація CSRF-токена, якщо ще не згенерований
         $this->initCsrfToken();
 
+        // Завантаження інформації про користувача
         $this->loadUser();
 
+        // Обробка POST-запиту на видалення акаунту
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_account'])) {
             $this->handleDeleteAccount();
         }
     }
-
     private function initCsrfToken(): void
     {
         if (!isset($_SESSION['csrf_token'])) {
@@ -69,6 +77,7 @@ class PersonalPageController
             $stmt->execute([$_SESSION['user_id']]);
 
             session_destroy();
+
             $homePageUrl = (defined('BASE_PROJECT_URL_PATH') ? BASE_PROJECT_URL_PATH : '/projekt1') . '/';
             header('Location: ' . $homePageUrl);
             exit;
@@ -86,6 +95,7 @@ class PersonalPageController
     {
         return $this->error;
     }
+
 
     public function getCsrfToken(): string
     {

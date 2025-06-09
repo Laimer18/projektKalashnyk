@@ -14,11 +14,11 @@ class UserRepository
 
     public function __construct(PDO $pdo)
     {
-        $this->pdo = $pdo;
+        $this->pdo = $pdo; // зберігаємо  приватно
     }
 
-    // Додати користувача, повертає true при успіху
-    public function add(User $user): bool
+    // Додати користувача, повертає true при успіху  CRUD
+    public function add(User $user): bool // бул або тру або фолс
     {
         $stmt = $this->pdo->prepare("
             INSERT INTO users (first_name, last_name, email, phone, password)
@@ -39,19 +39,19 @@ class UserRepository
         return $this->pdo->lastInsertId();
     }
 
-    public function existsByEmail(string $email): bool
+    public function existsByEmail(string $email): bool // перевірка існування за емейл
     {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
-        $stmt->execute([':email' => $email]);
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email"); //  перевірка існування  повертає  (0 або 1).
+        $stmt->execute([':email' => $email]); // отримує кількість
         return (bool) $stmt->fetchColumn();
     }
 
-    public function getAll(): array
+    public function getAll(): array // отримуємо всіх корист (array саме масив)
     {
         $stmt = $this->pdo->query("SELECT * FROM users");
-        $users = [];
+        $users = []; // порожній масив
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) { // вже повертає готовий масив а не сирі дані
             $users[] = $this->mapRowToUser($row);
         }
 
@@ -62,9 +62,9 @@ class UserRepository
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
         $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC); // повертає один рядок як асоціативний масив
 
-        return $row ? $this->mapRowToUser($row) : null;
+        return $row ? $this->mapRowToUser($row) : null; //  перетворює масив у об'єкт User
     }
 
     public function getByEmail(string $email): ?User
@@ -80,11 +80,11 @@ class UserRepository
     {
         $stmt = $this->pdo->prepare("
             UPDATE users
-            SET first_name = :first_name, last_name = :last_name, email = :email, phone = :phone, password = :password
+            SET first_name = :first_name, last_name = :last_name, email = :email, phone = :phone, password = :password // це  не змінюємо
             WHERE id = :id
         ");
 
-        return $stmt->execute([
+        return $stmt->execute([ // виконує підготовлений запит з переданими значеннями. або тру або фолс
             ':first_name' => $user->getFirstName(),
             ':last_name'  => $user->getLastName(),
             ':email'      => $user->getEmail(),

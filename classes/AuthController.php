@@ -50,7 +50,7 @@ class AuthController
     // Обробка запиту на реєстрацію
     public function handleRegisterRequest(): void
     {
-        // Якщо користувач уже авторизований — перенаправити на особисту сторінку
+        // Якщо користувач уже авторизований  перенаправити на особисту сторінку
         if (isset($_SESSION['user_id'])) {
             header("Location: " . $this->baseProjectUrlPath . '/user/personal_page');
             exit;

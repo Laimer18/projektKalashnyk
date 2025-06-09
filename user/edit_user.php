@@ -12,4 +12,4 @@ $successMessage = $controller->getSuccessMessage();
 $csrfToken = $controller->getCsrfToken();
 
 $view = new EditUserView($user, $errorMessage, $successMessage, $csrfToken);
-$view->render();
+$view->render(); // рендер виводе  сторінку зі сторінки редагування

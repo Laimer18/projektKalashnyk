@@ -1,8 +1,8 @@
 <?php
 
 class User {
-    private ?int $id;
-    private string $firstName;
+    private ?int $id; // може бути як число так і NULL
+    private string $firstName; // string це рядок, якщо ? то це необовязкове
     private string $lastName;
     private string $email;
     private string $phone;
@@ -18,7 +18,7 @@ class User {
         ?string $password = null,
         ?string $createdAt = null
     ) {
-        $this->setFirstName($firstName);
+        $this->setFirstName($firstName); // це сетери і завжди перевірка
         $this->setLastName($lastName);
         $this->setEmail($email);
         $this->setPhone($phone);
@@ -27,7 +27,7 @@ class User {
         $this->createdAt = $createdAt;
     }
 
-    // --- ГЕТТЕРИ ---
+    // --- ГЕТТЕРИ ---  отримування приватної інформації
     public function getId(): ?int {
         return $this->id;
     }
@@ -61,9 +61,9 @@ class User {
     }
 
     public function setFirstName(string $firstName): void {
-        $firstName = trim($firstName);
-        if ($firstName === '') {
-            throw new InvalidArgumentException("First name is required.");
+        $firstName = trim($firstName); // видаляє пробіли
+        if ($firstName === '') { // перевірка чи таке виходе
+            throw new InvalidArgumentException("First name is required."); //випише що хиба
         }
         $this->firstName = $firstName;
     }
@@ -78,13 +78,13 @@ class User {
 
     public function setEmail(string $email): void {
         $email = trim($email);
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // перевірка що це емеіл
             throw new InvalidArgumentException("Invalid email format.");
         }
         $this->email = $email;
     }
 
-    public function setPhone(string $phone): void {
+    public function setPhone(string $phone): void { // якщо воід то нічого не повертаємо
         $this->phone = trim($phone);
     }
 

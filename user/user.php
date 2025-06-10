@@ -8,7 +8,9 @@ class User {
     private string $phone;
     private ?string $password;
     private ?string $createdAt;
-
+    public function getName(): string {
+        return $this->firstName . ' ' . $this->lastName;
+    }
     public function __construct(
         string $firstName,
         string $lastName,

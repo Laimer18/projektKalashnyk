@@ -1,5 +1,6 @@
 <?php
 
+// Ensure BASE_PATH is defined (good practice)
 if (!defined('BASE_PATH')) {
     define('BASE_PATH', dirname(__DIR__));
 }
@@ -10,14 +11,24 @@ if (!class_exists('NavigationHelper')) {
         require_once $navHelperPath;
     }
 }
+if (!class_exists('SessionManager')) {
+    $sessionManagerPath = BASE_PATH . '/classes/SessionManager.php';
+    if (file_exists($sessionManagerPath)) {
+        require_once $sessionManagerPath;
+    }
+}
 
-$baseProjectPathForUrls = '/projekt1';
+$baseProjectPathForUrls = $basePath ?? '/projekt1'; // Use $basePath if available, otherwise fallback
 
-$account_url = class_exists('NavigationHelper') ? NavigationHelper::getAccountUrl($baseProjectPathForUrls) : $baseProjectPathForUrls . '/user/register1.php'; // Фоллбэк
+// FIX: Pass the SessionManager object as the first argument
+$account_url = class_exists('NavigationHelper') && isset($sessionManager) // Check if $sessionManager exists
+    ? NavigationHelper::getAccountUrl($sessionManager, $baseProjectPathForUrls)
+    : $baseProjectPathForUrls . '/user/register1.php'; // Fallback if NavigationHelper or SessionManager not loaded
+
 $logo_image_url = class_exists('NavigationHelper') ? NavigationHelper::getAssetUrl('images/logo.png', $baseProjectPathForUrls) : $baseProjectPathForUrls . '/images/logo.png';
 
 $home_url = $baseProjectPathForUrls . '/';
-$facebook_url = "https://www.facebook.com/profile.php?id=61572448198509"; // Внешняя ссылка остается как есть
+$facebook_url = "https://www.facebook.com/profile.php?id=61572448198509";
 
 ?>
 
@@ -28,8 +39,7 @@ $facebook_url = "https://www.facebook.com/profile.php?id=61572448198509"; // В�
                 <a href="<?php echo htmlspecialchars($home_url); ?>"><img src="<?php echo htmlspecialchars($logo_image_url); ?>" alt="Circle Template">
                     <span>Responsive Mobile Template</span></a>
             </h1>
-        </div> <!-- /.logo-wrapper -->
-        <div class="menu-wrapper">
+        </div> <div class="menu-wrapper">
             <ul class="menu">
                 <li><a class="homebutton" href="<?php echo htmlspecialchars($home_url); ?>">Home</a></li>
                 <li><a class="show-1" href="#menu-1">About</a></li>
@@ -37,14 +47,9 @@ $facebook_url = "https://www.facebook.com/profile.php?id=61572448198509"; // В�
                 <li><a class="show-3" href="#menu-3">Gallery</a></li>
                 <li><a class="show-4" href="#menu-4" onclick="templatemo_map();">Contact</a></li>
                 <li><a rel="nofollow" href="<?php echo htmlspecialchars($facebook_url); ?>" target="_parent">External Link</a></li>
-            </ul> <!-- /.menu -->
-            <a href="#" class="toggle-menu"><i class="fa fa-bars"></i></a>
-        </div> <!-- /.menu-wrapper -->
+            </ul> <a href="#" class="toggle-menu"><i class="fa fa-bars"></i></a>
+        </div> <a href="<?php echo htmlspecialchars($account_url); ?>" class="account-btn">ACCOUNT</a>
 
-        <!-- ACCOUNT BUTTON -->
-        <a href="<?php echo htmlspecialchars($account_url); ?>" class="account-btn">ACCOUNT</a>
-
-        <!--Arrow Navigation-->
         <a id="prevslide" class="load-item"><i class="fa fa-angle-left"></i></a>
         <a id="nextslide" class="load-item"><i class="fa fa-angle-right"></i></a>
 

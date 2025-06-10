@@ -1,3 +1,4 @@
+
 <?php
 class Router
 {
@@ -52,6 +53,7 @@ class Router
                 __DIR__ . '/' . $classNamePath . '.php',
                 __DIR__ . '/../user/' . $classNamePath . '.php',
                 __DIR__ . '/../classes/' . $classNamePath . '.php',
+                __DIR__ . '/../views/' . $classNamePath . '.php',
             ];
             foreach ($paths as $path) {
                 if (file_exists($path)) {
@@ -74,7 +76,7 @@ class Router
             case '/contact/submit':
                 // Обробка форми контакту, тільки POST
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $controller = new ContactHandler($this->pdo);
+                    $controller = new ContactController($this->pdo);
                     $result = $controller->handleForm($_POST);
 
                     // Збереження статусу у сесії для повідомлення
@@ -90,21 +92,34 @@ class Router
                 exit;
 
             case '/login':
-                (new AuthController($this->pdo, $this->basePath))->handleLoginRequest();
+                $userRepo = new UserRepository($this->pdo);
+                $session = SessionManager::getInstance();
+                $result = (new AuthController($userRepo, $session, $this->basePath))->handleLoginRequest();
+                (new LoginView($result['message'], $result['data'], $this->basePath))->render();
                 break;
 
             case '/logout':
-                (new AuthController($this->pdo, $this->basePath))->handleLogoutRequest();
+                $userRepo = new UserRepository($this->pdo);
+                $session = SessionManager::getInstance();
+                (new AuthController($userRepo, $session, $this->basePath))->logout();
                 break;
 
             case '/register':
-                (new AuthController($this->pdo, $this->basePath))->handleRegisterRequest();
+                $userRepo = new UserRepository($this->pdo);
+                $session = SessionManager::getInstance();
+                $result = (new AuthController($userRepo, $session, $this->basePath))->handleRegisterRequest();
+                (new RegisterView($result['message'], $result['formData'], $this->basePath))->render();
                 break;
 
+            case '/user/account':
+                $userRepo = new UserRepository($this->pdo);
+                $session = SessionManager::getInstance();
+                (new UserController($userRepo, $session))->showAccountPage();
+                break;
             case '/user/save_cookie_consent':
                 (new CookieConsentController())->saveConsent();
                 break;
-
+ 
             case '/user/personal_page':
                 // Вивід персональної сторінки користувача
                 $controller = new PersonalPageController($this->pdo);
@@ -129,7 +144,9 @@ class Router
                 require_once __DIR__ . '/../classes/EditUserController.php';
                 require_once __DIR__ . '/../views/EditAccountView.php';
 
-                $controller = new EditUserController($this->pdo);
+                $userRepo = new UserRepository($this->pdo);
+                $session = SessionManager::getInstance();
+                $controller = new EditUserController($userRepo, $session, $this->basePath);
                 $controller->handleRequest();
 
                 $view = new EditAccountView(

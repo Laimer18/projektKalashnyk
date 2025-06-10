@@ -1,10 +1,5 @@
 <?php
 declare(strict_types=1);
-
-/**
- * Контролер для персональної сторінки користувача.
- * Завантажує дані користувача, обробляє видалення акаунту з перевіркою CSRF.
- */
 class PersonalPageController
 {
     private PDO $pdo;

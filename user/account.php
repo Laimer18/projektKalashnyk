@@ -7,5 +7,7 @@ $pdo = Database::getInstance();
 
 $baseProjectUrlPath = '/projekt1';
 
-$authController = new AuthController($pdo, $baseProjectUrlPath);
+$userRepo = new UserRepository($pdo);
+$sessionManager = SessionManager::getInstance();
+$authController = new AuthController($userRepo, $sessionManager, $basePath);
 $authController->handleRedirect();

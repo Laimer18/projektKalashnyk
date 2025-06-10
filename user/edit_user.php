@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../classes/EditUserController.php';
+require_once __DIR__ . '/../classes/UserController.php';
 require_once __DIR__ . '/../views/EditUserView.php';
 require_once __DIR__ . '/../user/User.php';
 

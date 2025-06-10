@@ -1,5 +1,4 @@
 <?php
-session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en" class="no-js">
@@ -22,7 +21,7 @@ session_start();
 <div class="bg-overlay"></div>
 <div class="container-fluid">
     <div class="row">
-        <?php require_once 'views/header.php'; ?>
+        <?php require_once 'tools/header.php'; ?>
 
         <main class="col-md-8 col-sm-12" id="menu-container">
             <section id="home" class="content">
@@ -35,7 +34,7 @@ session_start();
     </div>
 </div>
 
-<?php require_once 'views/footer.php'; ?>
+<?php require_once 'tools/footer.php'; ?>
 
 <script src="js/vendor/jquery-1.10.1.min.js"></script>
 <script>

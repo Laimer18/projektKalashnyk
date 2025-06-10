@@ -1,8 +1,4 @@
 <?php
-
-/**
- * Хелпер для генерації URL-адрес, пов'язаних з навігацією по сайту.
- */
 class NavigationHelper {
 
     public static function getAccountUrl(string $basePath = '/projekt1'): string {

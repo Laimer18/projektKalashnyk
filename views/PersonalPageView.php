@@ -36,9 +36,6 @@ class PersonalPageView
             </div>
             <div class="btn-group">
                 <a href="/projekt1/index.php" class="main-btn home-btn">Home</a>
-                <a href="/projekt1/user/order" class="main-btn order-btn">Order Photoshoot</a>
-                <a href="/projekt1/user/orders-history" class="main-btn history-btn">Order History</a>
-                <a href="#" class="main-btn wish-btn" id="wish-btn">Random Wishes</a>
                 <?php
                     $editAccountUrl = 'edit_account.php'; // Фоллбэк
                     if (class_exists('NavigationHelper')) {
@@ -61,19 +58,6 @@ class PersonalPageView
             </form>
         </div>
 
-        <script>
-            document.getElementById('wish-btn').onclick = function(e) {
-                e.preventDefault();
-                fetch('get_wish.php') // Adjust path as necessary
-                    .then(response => response.text())
-                    .then(text => {
-                        document.getElementById('wish-result').innerText = text;
-                    })
-                    .catch(() => {
-                        document.getElementById('wish-result').innerText = "Failed to fetch wish.";
-                    });
-            };
-        </script>
         </body>
         </html>
         <?php

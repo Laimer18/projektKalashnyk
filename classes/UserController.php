@@ -1,50 +1,80 @@
 <?php
-session_start();
+declare(strict_types=1);
 
-require_once __DIR__ . '/../contact/db.php';
-require_once __DIR__ . '/../user/user.php';
-require_once __DIR__ . '/../user/user_rep.php';
+require_once __DIR__ . '/../user/User.php';
+require_once __DIR__ . '/../user/UserRepository.php';
+require_once __DIR__ . '/SessionManager.php';
 
 class UserController
 {
-    private UserRepository $userRepository; // Репозиторій для роботи з користувачами
-    private array $users = [];               // Масив користувачів
+    private UserRepository $userRepo;
+    private SessionManager $session;
+    private ?User $user = null; // Поточний залогінений користувач
+    private string $csrfToken;
+    private ?string $statusMessage = null; // Залишаємо для загальних повідомлень
 
-    public function __construct()
+    public function __construct(UserRepository $userRepo, SessionManager $session)
     {
-        // Якщо користувач не авторизований, перекидаємо на логін
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: login.php');
-            exit;
+        $this->userRepo = $userRepo;
+        $this->session = $session;
+
+        // Перевірка авторизації є критичною
+        if (!$session->isLoggedIn()) {
+            $this->redirect('login.php'); // Перенаправлення, якщо не авторизований
         }
 
-        // Ініціалізуємо репозиторій з підключенням до бази
-        $this->userRepository = new UserRepository(Database::getInstance());
+        // Отримання поточного користувача (може бути потрібним для відображення його даних деінде)
+        $this->user = $userRepo->getById($session->getUserId());
+
+        // Управління CSRF-токеном (якщо він потрібен для інших дій, не пов'язаних з редагуванням профілю)
+        $tokenFromSession = $session->get('csrf_token');
+        $this->csrfToken = $tokenFromSession !== null ? $tokenFromSession : $this->generateCsrfToken();
+    }
+    public function handleRequest(): void
+    {
+
     }
 
-    public function loadUsers(): void
+    public function showAccountPage(): void
     {
-        // Завантажуємо всіх користувачів з бази
-        $this->users = $this->userRepository->getAll();
+        $user = $this->getUser();
+        $csrfToken = $this->getCsrfToken();
+        
+        // Завантажуємо подання для сторінки акаунта
+        require_once __DIR__ . '/../user/account.php';
+    }
+    private function validateCsrfToken(string $token): bool
+    {
+        return hash_equals($this->csrfToken, $token);
     }
 
-    public function getUsers(): array
+    private function generateCsrfToken(): string
     {
-        return $this->users; // Повертаємо завантажених користувачів
+        $token = bin2hex(random_bytes(32));
+        $this->session->set('csrf_token', $token);
+        return $token;
     }
 
-    public function deleteUser($id): void
+    private function redirect(string $url): void
     {
-        // Перевірка коректності id
-        if (!isset($id) || !is_numeric($id)) {
-            die("User ID not specified or invalid.");
-        }
-
-        // Видаляємо користувача за id
-        $this->userRepository->delete((int)$id);
-
-        // Переадресація на сторінку зі списком користувачів
-        header("Location: users.php");
+        header("Location: $url");
         exit;
     }
+
+    public function getStatusMessage(): ?string
+    {
+        return $this->statusMessage;
+    }
+
+    public function getCsrfToken(): string
+    {
+        return $this->csrfToken;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+
 }

@@ -4,134 +4,64 @@ declare(strict_types=1);
 require_once __DIR__ . '/../user/User.php';
 require_once __DIR__ . '/../user/UserRepository.php';
 require_once __DIR__ . '/SessionManager.php';
-require_once __DIR__ . '/../contact/db.php';
 
 class EditUserController
 {
-    private PDO $pdo;
     private UserRepository $userRepo;
     private SessionManager $sessionManager;
-    private ?User $user = null;           // Currently logged-in user
-    private ?User $editingUser = null;    // User being edited (self or another)
+    private string $basePath;
+    private ?User $user = null;
+    private ?User $editingUser = null;
     private ?string $errorMessage = null;
     private ?string $successMessage = null;
     private string $csrfToken = '';
 
-    public function __construct()
+    public function __construct(UserRepository $userRepo, SessionManager $sessionManager, string $basePath)
     {
-        $this->sessionManager = SessionManager::getInstance();
+        $this->userRepo = $userRepo;
+        $this->sessionManager = $sessionManager;
+        $this->basePath = $basePath;
 
         if (!$this->sessionManager->isLoggedIn()) {
-            header('Location: login.php');
-            exit;
+            $this->redirect($this->basePath . '/login');
         }
-
-        $this->pdo = Database::getInstance();
-        $this->userRepo = new UserRepository($this->pdo);
 
         $this->user = $this->userRepo->getById($this->sessionManager->getUserId());
         if (!$this->user) {
-            $this->errorMessage = "Current user not found.";
-            return;
+            $this->errorMessage = "Поточного користувача не знайдено.";
+            $this->sessionManager->logout();
+            $this->redirect($this->basePath . '/login');
         }
 
-        $this->csrfToken = $this->sessionManager->get('csrf_token');
-        if (!$this->csrfToken) {
-            $this->csrfToken = bin2hex(random_bytes(32));
-            $this->sessionManager->set('csrf_token', $this->csrfToken);
+        $this->initCsrfToken();
+        $this->editingUser = $this->user;
+    }
+
+    private function initCsrfToken(): void
+    {
+        $tokenFromSession = $this->sessionManager->get('csrf_token');
+        if (!$tokenFromSession) {
+            $token = bin2hex(random_bytes(32));
+            $this->sessionManager->set('csrf_token', $token);
+            $this->csrfToken = $token;
+        } else {
+            $this->csrfToken = $tokenFromSession;
         }
+    }
+
+    private function isValidCsrfToken(): bool
+    {
+        return isset($_POST['csrf_token']) && hash_equals($this->csrfToken, $_POST['csrf_token']);
     }
 
     public function handleRequest(): void
     {
-        $editId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-        if ($editId === 0 || $editId === $this->user->getId()) {
-            $this->editingUser = $this->user;
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $this->processOwnAccountForm($_POST);
-            }
-        } else {
-            $this->editingUser = $this->userRepo->getById($editId);
-            if (!$this->editingUser) {
-                $this->errorMessage = "User not found to edit.";
-                return;
-            }
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $this->processAdminEditForm($_POST);
-            }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isValidCsrfToken()) {
+            $this->processUpdate($_POST);
         }
     }
 
-    private function processOwnAccountForm(array $postData): void
-    {
-        if (!isset($postData['csrf_token']) || $postData['csrf_token'] !== $this->csrfToken) {
-            $this->errorMessage = 'Incorrect CSRF token.';
-            return;
-        }
-
-        $firstName = trim($postData['first_name'] ?? '');
-        $lastName = trim($postData['last_name'] ?? '');
-        $email = trim($postData['email'] ?? '');
-        $phone = trim($postData['phone'] ?? '');
-        $currentPassword = $postData['current_password'] ?? '';
-        $newPassword = $postData['new_password'] ?? '';
-        $confirmPassword = $postData['confirm_password'] ?? '';
-
-        if ($firstName === '' || $lastName === '' || $email === '') {
-            $this->errorMessage = "First name, last name, and email are required.";
-            return;
-        }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errorMessage = "Invalid email format.";
-            return;
-        }
-        if ($email !== $this->editingUser->getEmail() && $this->userRepo->existsByEmail($email)) {
-            $this->errorMessage = 'This email is already in use.';
-            return;
-        }
-
-        $this->editingUser->setFirstName($firstName);
-        $this->editingUser->setLastName($lastName);
-        $this->editingUser->setEmail($email);
-        $this->editingUser->setPhone($phone);
-
-        if ($currentPassword !== '' || $newPassword !== '' || $confirmPassword !== '') {
-            if ($currentPassword === '' || $newPassword === '' || $confirmPassword === '') {
-                $this->errorMessage = 'To change your password, fill in all the appropriate fields.';
-                return;
-            }
-            if (!password_verify($currentPassword, $this->editingUser->getPassword())) {
-                $this->errorMessage = 'Current password is incorrect.';
-                return;
-            }
-            if ($newPassword !== $confirmPassword) {
-                $this->errorMessage = 'New passwords do not match.';
-                return;
-            }
-            if (strlen($newPassword) < 6) {
-                $this->errorMessage = 'The new password must be at least 6 characters long.';
-                return;
-            }
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-            $this->editingUser->setPassword($hashedPassword);
-        }
-
-        if ($this->userRepo->update($this->editingUser)) {
-            $this->successMessage = 'Account updated successfully.';
-
-            if ($this->editingUser->getId() === $this->user->getId()) {
-                $_SESSION['user']['first_name'] = $firstName;
-                $_SESSION['user']['last_name'] = $lastName;
-                $_SESSION['user']['email'] = $email;
-                $_SESSION['user']['phone'] = $phone;
-            }
-        } else {
-            $this->errorMessage = 'Failed to update account.';
-        }
-    }
-
-    private function processAdminEditForm(array $postData): void
+    private function processUpdate(array $postData): void
     {
         $firstName = trim($postData['first_name'] ?? '');
         $lastName = trim($postData['last_name'] ?? '');
@@ -139,15 +69,15 @@ class EditUserController
         $phone = trim($postData['phone'] ?? '');
 
         if ($firstName === '' || $lastName === '' || $email === '') {
-            $this->errorMessage = "First name, last name, and email are required.";
+            $this->errorMessage = "Ім'я, прізвище та електронна пошта є обов'язковими.";
             return;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->errorMessage = "Invalid email format.";
+            $this->errorMessage = "Невірний формат електронної пошти.";
             return;
         }
         if ($email !== $this->editingUser->getEmail() && $this->userRepo->existsByEmail($email)) {
-            $this->errorMessage = 'This email is already used by another user.';
+            $this->errorMessage = 'Ця електронна пошта вже використовується іншим користувачем.';
             return;
         }
 
@@ -157,10 +87,10 @@ class EditUserController
         $this->editingUser->setPhone($phone);
 
         if ($this->userRepo->update($this->editingUser)) {
-            header('Location: users.php');
-            exit;
+            $this->successMessage = 'Інформація профілю успішно оновлена.';
+            $this->sessionManager->login($this->editingUser);
         } else {
-            $this->errorMessage = 'Failed to update user.';
+            $this->errorMessage = 'Не вдалося оновити користувача.';
         }
     }
 
@@ -182,5 +112,11 @@ class EditUserController
     public function getCsrfToken(): string
     {
         return $this->csrfToken;
+    }
+
+    private function redirect(string $url): void
+    {
+        header('Location: ' . $url);
+        exit;
     }
 }

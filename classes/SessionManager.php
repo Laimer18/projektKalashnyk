@@ -40,21 +40,6 @@ class SessionManager
         $_SESSION['email'] = $user->getEmail();
 
         error_log("SessionManager::login - Set user_id: " . $userIdToSet . " | Session ID: " . session_id());
-
-        // Отримуємо статус cookie consent для користувача (через репозиторій)
-        $userId = $user->getId();
-        if ($userId) {
-            try {
-                $pdo = Database::getInstance();
-                $cookieConsentRepo = new CookieConsentRepository($pdo);
-                $consentStatus = $cookieConsentRepo->getUserConsentStatus($userId);
-                $_SESSION['user_cookie_consent_status'] = $consentStatus ?? 'pending';
-            } catch (Exception $e) {
-                $_SESSION['user_cookie_consent_status'] = 'pending';
-            }
-        } else {
-            $_SESSION['user_cookie_consent_status'] = 'pending';
-        }
     }
 
     public function isLoggedIn(): bool

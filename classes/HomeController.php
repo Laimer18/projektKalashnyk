@@ -31,10 +31,10 @@ class HomeController {
     }
 
 
-    public function index(): void {
+    public function index(): void { // Головна сторінка
         $galleryItems = $this->getGalleryData();
 
-        $contactFormStatusMessage = '';
+        $contactFormStatusMessage = ''; // Повідомлення про стан контактної форми`
         $contactFormStatusType = '';
 
         // Якщо є повідомлення про стан контактної форми у сесії — обробляємо його

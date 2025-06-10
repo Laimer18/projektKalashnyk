@@ -2,9 +2,9 @@
 <?php
 class Router
 {
-    private string $basePath;
+    private string $basePath; // Базовий шлях проєкту, наприклад '/projekt1'
     private string $requestPath;
-    private PDO $pdo;
+    private PDO $pdo; // Підключення до бази даних через PDO
 
     public function __construct(string $basePath)
     {
@@ -48,7 +48,7 @@ class Router
     {
         // Автоматично підключає клас за ім'ям, шукаючи в трьох папках
         spl_autoload_register(function ($className) {
-            $classNamePath = str_replace('\\', DIRECTORY_SEPARATOR, $className);
+            $classNamePath = str_replace('\\', DIRECTORY_SEPARATOR, $className); // Перетворюємо клас на шлях
             $paths = [
                 __DIR__ . '/' . $classNamePath . '.php',
                 __DIR__ . '/../user/' . $classNamePath . '.php',
@@ -66,7 +66,7 @@ class Router
 
     public function route(): void
     {
-        switch ($this->requestPath) {
+        switch ($this->requestPath) { // Визначаємо дію на основі запиту
 
             case '/':
             case '/index':
@@ -94,65 +94,51 @@ class Router
             case '/login':
                 $userRepo = new UserRepository($this->pdo);
                 $session = SessionManager::getInstance();
-                $result = (new AuthController($userRepo, $session, $this->basePath))->handleLoginRequest();
-                (new LoginView($result['message'], $result['data'], $this->basePath))->render();
+                $result = (new AuthController($userRepo, $session, $this->basePath))->handleLoginRequest();// Обробка запиту на логін
+                (new LoginView($result['message'], $result['data'], $this->basePath))->render();// Відображення форми логіну
                 break;
 
             case '/logout':
-                $userRepo = new UserRepository($this->pdo);
-                $session = SessionManager::getInstance();
-                (new AuthController($userRepo, $session, $this->basePath))->logout();
+                $userRepo = new UserRepository($this->pdo); // Репозиторій користувачів для доступу до даних
+                $session = SessionManager::getInstance(); // Менеджер сесій для управління авторизацією
+                (new AuthController($userRepo, $session, $this->basePath))->logout(); // Вихід з системи
                 break;
 
             case '/register':
                 $userRepo = new UserRepository($this->pdo);
-                $session = SessionManager::getInstance();
-                $result = (new AuthController($userRepo, $session, $this->basePath))->handleRegisterRequest();
+                $session = SessionManager::getInstance();// Менеджер сесій для управління авторизацією
+                $result = (new AuthController($userRepo, $session, $this->basePath))->handleRegisterRequest(); // Обробка запиту на реєстрацію
                 (new RegisterView($result['message'], $result['formData'], $this->basePath))->render();
                 break;
 
             case '/user/account':
-                $userRepo = new UserRepository($this->pdo);
-                $session = SessionManager::getInstance();
-                (new UserController($userRepo, $session))->showAccountPage();
+                $userRepo = new UserRepository($this->pdo); // Репозиторій користувачів для доступу до даних
+                $session = SessionManager::getInstance(); // Менеджер сесій для управління авторизацією
+                (new UserController($userRepo, $session))->showAccountPage(); // Відображення сторінки акаунта користувача
                 break;
-            case '/user/save_cookie_consent':
-                (new CookieConsentController())->saveConsent();
-                break;
- 
             case '/user/personal_page':
                 // Вивід персональної сторінки користувача
-                $controller = new PersonalPageController($this->pdo);
-                $userData = $controller->getUser();
+                $controller = new PersonalPageController($this->pdo); // Ініціалізація контролера персональної сторінки
+                $userData = $controller->getUser(); // Отримання даних користувача
                 $csrfToken = $controller->getCsrfToken();
 
                 require_once __DIR__ . '/../views/PersonalPageView.php';
-                (new PersonalPageView($userData, $csrfToken))->render();
+                (new PersonalPageView($userData, $csrfToken))->render(); // Відображення персональної сторінки користувача
                 break;
-
-            case '/user/order':
-                require_once __DIR__ . '/../views/OrderView.php';
-                (new OrderController($this->pdo))->handleRequest();
-                break;
-
-            case '/user/orders-history':
-                (new OrdersHistoryController($this->pdo))->showOrdersHistory();
-                break;
-
             case '/user/edit-account':
                 // Обробка редагування акаунта користувача з виводом форми
                 require_once __DIR__ . '/../classes/EditUserController.php';
                 require_once __DIR__ . '/../views/EditAccountView.php';
 
-                $userRepo = new UserRepository($this->pdo);
-                $session = SessionManager::getInstance();
-                $controller = new EditUserController($userRepo, $session, $this->basePath);
+                $userRepo = new UserRepository($this->pdo); // Репозиторій користувачів для доступу до даних
+                $session = SessionManager::getInstance(); // Менеджер сесій для управління авторизацією
+                $controller = new EditUserController($userRepo, $session, $this->basePath); // Ініціалізація контролера редагування акаунта
                 $controller->handleRequest();
 
                 $view = new EditAccountView(
-                    $controller->getEditingUser(),
-                    $controller->getErrorMessage() ?? '',
-                    $controller->getSuccessMessage() ?? '',
+                    $controller->getEditingUser(), // Отримання користувача для редагування
+                    $controller->getErrorMessage() ?? '', // Отримання повідомлення про помилку, якщо є
+                    $controller->getSuccessMessage() ?? '', // Отримання повідомлення про успіх, якщо є
                     $controller->getCsrfToken()
                 );
                 $view->render();
